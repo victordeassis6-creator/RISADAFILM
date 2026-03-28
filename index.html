@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Risada Film | Películas Premium SP</title>
+    <!-- CSS & Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- jsPDF & jsPDF-AutoTable -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+    <style>
+        :root {
+            --bg: #030303; --surface: rgba(15,15,15,0.7); --elevated: rgba(22,22,22,0.8);
+            --accent: #d4af37; --accent-glow: rgba(212, 175, 55, 0.4);
+            --danger: #e63946; 
+            --text: #f0f0f0; --text-dim: #999;
+            --brand-yellow: #ffff00;
+            --font-h: 'Orbitron', sans-serif; --font-p: 'Outfit', sans-serif;
+            --trans: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
+            body { font-family: var(--font-p); background: var(--bg); color: var(--text); overflow-x: hidden; line-height: 1.6; }
+        
+        .brand-text { font-family: 'Georgia', serif; font-style: italic; font-weight: 900; color: var(--brand-yellow); text-shadow: 0 0 5px rgba(255,255,0,0.2); }
+        
+        /* Premium Real Carbon Fiber bg */
+        .carbon-bg {
+            position: fixed; inset: 0; z-index: -2; opacity: 0.25;
+            background: linear-gradient(27deg, #151515 5px, transparent 5px) 0 5px,
+                        linear-gradient(207deg, #151515 5px, transparent 5px) 10px 0px,
+                        linear-gradient(27deg, #222 5px, transparent 5px) 0px 10px,
+                        linear-gradient(207deg, #222 5px, transparent 5px) 10px 5px,
+                        linear-gradient(90deg, #1b1b1b 10px, transparent 10px),
+                        linear-gradient(#1d1d1d 25%, #1a1a1a 25%, #1a1a1a 50%, transparent 50%, transparent 75%, #242424 75%, #242424 100%);
+            background-color: #131313;
+            background-size: 20px 20px;
+        }
+        .glow-blob {
+            position: fixed; width: 60vw; height: 60vw; background: radial-gradient(circle, var(--accent-glow) 0%, transparent 60%);
+            border-radius: 50%; filter: blur(100px); opacity: 0.15; z-index: -1; pointer-events: none;
+        }
+        .glow-blob.one { top: -20%; left: -20%; }
+        .glow-blob.two { bottom: -20%; right: -20%; }
+
+        h1, h2, h3 { font-family: var(--font-h); text-transform: uppercase; font-weight: 800; letter-spacing: 2px; }
+        a { text-decoration: none; color: inherit; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        section { padding: 100px 0; }
+        
+        .section-title { font-size: 2.8rem; text-align: center; margin-bottom: 1rem;
+            background: linear-gradient(to right, #fff 0%, #aaa 100%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 20px rgba(255,255,255,0.1); }
+        .section-subtitle { text-align: center; color: var(--text-dim); max-width: 600px; margin: 0 auto 3rem auto; font-size: 1.1rem; }
+        .text-gold { background: linear-gradient(135deg, #fff2a8 0%, #d4af37 50%, #aa8c2c 100%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 30px var(--accent-glow); }
+        
+        /* Buttons */
+        /* Defaults */
+        .btn { display: inline-block; padding: 15px 30px; border-radius: 30px; font-weight: 700; text-decoration: none; text-transform: uppercase; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; border: none; font-size: 0.9rem; letter-spacing: 1px; }
+        .btn:hover { transform: translateY(-5px) scale(1.03); box-shadow: 0 15px 30px rgba(0,0,0,0.4); }
+        .btn-gold { background: linear-gradient(135deg, #f5c518, #d4a017); color: #000; box-shadow: 0 5px 15px rgba(245,197,24, 0.2); }
+        .btn-gold:hover { background: linear-gradient(135deg, #f8d347, #e8b320); box-shadow: 0 10px 25px rgba(245,197,24, 0.5); }
+        .btn-outline { background: transparent; color: #fff; border: 2px solid rgba(255,255,255,0.2); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .btn-outline:hover { background: #fff; color: #000; box-shadow: 0 10px 25px rgba(255,255,255,0.3); transform: translateY(-5px) scale(1.03); }
+
+        /* Scroll Reveal */
+        .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s ease; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        /* Header */
+        header { position: fixed; top: 0; width: 100%; background: rgba(5,5,5,0.8); backdrop-filter: blur(10px); z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.05); transition: var(--trans); padding: 15px 0; }
+        header.scrolled { padding: 10px 0; background: rgba(5,5,5,0.95); box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
+        .nav-wrap { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: 'Georgia', Times, serif; font-style: italic; font-size: 1.8rem; font-weight: 900; letter-spacing: -0.5px; display: flex; align-items: center; gap: 10px; }
+        .logo span { font-style: italic; }
+        .nav-links { display: flex; gap: 30px; list-style: none; }
+        .nav-links a { color: #fff; text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: var(--trans); text-transform: uppercase; letter-spacing: 1px; }
+        .nav-links a:hover { color: var(--accent); text-shadow: 0 0 10px rgba(245,197,24,0.5); }
+        .mobile-btn { display: none; background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; }
+
+        /* Hero */
+        .hero { height: 100vh; display: flex; align-items: center; position: relative; overflow: hidden; background: linear-gradient(to right, rgba(5,5,5,1) 0%, rgba(5,5,5,0.7) 40%, rgba(5,5,5,0.2) 100%), url('https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?auto=format&fit=crop&q=80&w=1920') center/cover no-repeat; }
+        .hero::after { content: ''; position: absolute; right: 0; top: 0; width: 50%; height: 100%; background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600"><path fill="%231a1a1a" d="M800 0v600H200L800 0z"/></svg>') no-repeat right; background-size: cover; z-index: -1; opacity: 0.1; }
+        .hero-cont { max-width: 700px; }
+        .hero h1 { font-size: 4rem; line-height: 1.1; margin-bottom: 20px; animation: fadeUp 1s ease forwards; text-shadow: 0 0 20px var(--accent-glow); }
+        .hero p { font-size: 1.2rem; color: var(--text-dim); margin-bottom: 40px; opacity: 0; animation: fadeUp 1s ease forwards 0.2s; }
+        .hero-btns { display: flex; gap: 20px; opacity: 0; animation: fadeUp 1s ease forwards 0.4s; }
+
+        /* Services */
+        .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
+        .card { background: var(--surface); padding: 40px 30px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); transition: var(--trans); position: relative; overflow: hidden; }
+        .card:hover { transform: translateY(-10px); border-color: rgba(245, 197, 24, 0.4); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .card-icon { width: 60px; height: 60px; background: var(--accent-glow); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 25px; color: var(--accent); }
+        .card h3 { font-size: 1.2rem; margin-bottom: 15px; }
+        .card p { color: var(--text-dim); font-size: 0.95rem; }
+
+        /* Differentials */
+        .diff-sec { background: var(--elevated); border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .diff-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; text-align: center; }
+        .diff-item .icon { width: 80px; height: 80px; margin: 0 auto 20px; border-radius: 50%; background: var(--bg); border: 1px solid rgba(245, 197, 24, 0.2); color: var(--accent); display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); transition: var(--trans); }
+        .diff-item:hover .icon { transform: scale(1.1); box-shadow: 0 0 20px var(--accent-glow); }
+
+        /* Gallery */
+        .gal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .gal-item { aspect-ratio: 4/3; background: var(--elevated); border-radius: 8px; overflow: hidden; position: relative; cursor: pointer; }
+        .gal-mock { width: 100%; height: 100%; background-size: cover; background-position: center; transition: transform 0.6s ease; }
+        .gal-item:hover .gal-mock { transform: scale(1.1); }
+        .gal-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.8); display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transition: var(--trans); text-align: center; padding: 20px; }
+        .gal-item:hover .gal-overlay { opacity: 1; }
+        .gal-overlay h4 { color: var(--accent); font-size: 1.2rem; margin-bottom: 5px; }
+
+        /* Mock Bg Classes */
+        .bg-auto { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect fill="%23222" width="100%" height="100%"/><circle cx="100" cy="150" r="40" fill="%23111"/><circle cx="300" cy="150" r="40" fill="%23111"/><path d="M60 150h280" stroke="%23333" stroke-width="20" stroke-linecap="round"/><text x="200" y="150" fill="%23444" font-family="sans-serif" font-size="20" text-anchor="middle">Carro</text></svg>'); }
+        .bg-resi { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect fill="%231a202c" width="100%" height="100%"/><rect x="100" y="100" width="80" height="120" fill="%232d3748"/><rect x="220" y="100" width="80" height="120" fill="%232d3748"/><text x="200" y="150" fill="%234a5568" font-family="sans-serif" font-size="20" text-anchor="middle">Casa</text></svg>'); }
+        .bg-com  { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect fill="%23171923" width="100%" height="100%"/><rect x="50" y="50" width="300" height="250" fill="%232d3748"/><text x="200" y="150" fill="%23a0aec0" font-family="sans-serif" font-size="20" text-anchor="middle">Prédio</text></svg>'); }
+
+        /* Reviews */
+        .rating-box { display: flex; width: max-content; margin: 0 auto 50px auto; flex-direction: column; align-items: center; background: rgba(20,20,20,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(212,175,55,0.2); padding: 30px 50px; border-radius: 4px; box-shadow: 0 15px 40px rgba(0,0,0,0.6); border-top: 2px solid var(--accent); }
+        .rating-box .score { font-size: 3rem; font-family: var(--font-h); color: var(--accent); line-height: 1; }
+        .rating-box .stars { color: var(--accent); font-size: 1.5rem; letter-spacing: 5px; margin: 10px 0; }
+        .rev-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px,1fr)); gap: 30px; }
+        .rev-card { background: var(--elevated); padding: 30px; border-radius: 8px; border-left: 3px solid var(--accent); }
+        .rev-head { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .avatar { width: 40px; height: 40px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+        .rev-card p { font-style: italic; color: var(--text-dim); }
+
+        /* Form, Map & Simulator */
+        .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; }
+        .form-box { background: var(--surface); padding: 40px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
+        .fg { margin-bottom: 20px; }
+        .fg label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-dim); }
+        .fc { width: 100%; padding: 12px 15px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 4px; font-family: var(--font-p); transition: var(--trans); }
+        .fc:focus { outline: none; border-color: var(--accent); }
+        .map-box { border-radius: 12px; overflow: hidden; position: relative; min-height: 400px; border: 1px solid rgba(255,255,255,0.05); }
+        .map-overlay { position: absolute; bottom: 20px; left: 20px; right: 20px; background: rgba(5,5,5,0.9); backdrop-filter: blur(10px); padding: 20px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); display: flex; gap: 15px; align-items: center; }
+        
+        .sim-step { display: none; animation: fadeUp 0.5s ease; }
+        .sim-step.active { display: block; }
+        .step-header { margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
+        .brands-grid { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-bottom: 30px; }
+        .models-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        
+        /* Sim Buttons */
+        .sim-btn-brand { background: var(--elevated); border: 2px solid rgba(255,255,255,0.05); color: #fff; padding: 20px; border-radius: 12px; cursor: pointer; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        .sim-btn-brand svg { width: 40px; height: 40px; fill: var(--text-dim); transition: var(--trans); }
+        .sim-btn-brand:hover { background: #111; border-color: var(--accent); transform: translateY(-8px) scale(1.05); box-shadow: 0 15px 30px rgba(245,197,24,0.3); }
+        .sim-btn-brand:hover svg { fill: var(--accent); transform: scale(1.1); filter: drop-shadow(0 0 10px var(--accent)); }
+        
+        .sim-btn-model { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 25px 15px; border-radius: 12px; cursor: pointer; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; font-size: 1rem; }
+        .sim-btn-model:hover { background: rgba(245,197,24,0.15); border-color: var(--accent); color: var(--accent); transform: translateY(-5px) scale(1.03); box-shadow: 0 10px 25px rgba(245,197,24,0.2); }
+
+        .films-carousel { display: flex; gap: 20px; overflow-x: auto; padding: 20px 0; scroll-snap-type: x mandatory; margin-bottom: 20px; }
+        .films-carousel::-webkit-scrollbar { height: 8px; }
+        .films-carousel::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+        .film-card-pro { min-width: 320px; scroll-snap-align: center; background: #edeff1; color: #111; padding: 30px 20px; border-radius: 12px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); cursor: pointer; transition: transform 0.3s ease; }
+        .film-card-pro:hover { transform: scale(1.02); }
+        .film-card-pro h4 { font-family: var(--font-h); font-size: 1.3rem; margin-bottom: 10px; color: #000; }
+        .film-card-pro p.desc { font-size: 0.85rem; color: #444; margin-bottom: 20px; min-height: 60px; line-height: 1.4; }
+        .film-card-pro .logo-placeholder { font-family: 'Impact', sans-serif; font-size: 1.6rem; letter-spacing: 2px; margin-bottom: 20px; color: #000; text-transform: uppercase; }
+        .film-card-pro .specs { display: flex; justify-content: space-around; background: #fff; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 0.8rem; font-weight: 600; color: #333; }
+        .film-card-pro .specs span { display: flex; flex-direction: column; align-items: center; gap: 5px; text-align: center; }
+        .film-card-pro .garantia { font-size: 0.85rem; color: #555; margin-bottom: 20px; }
+        .film-card-pro .btn-select { background: linear-gradient(to bottom, #d4d4d4, #f5f5f5); border: 1px solid #aaa; color: #000; padding: 12px 0; width: 100%; border-radius: 20px; font-weight: 700; text-transform: uppercase; cursor: pointer; transition: all 0.3s ease; }
+        .film-card-pro:hover .btn-select { background: linear-gradient(135deg, #f5c518, #d4a017); border-color: #d4a017; box-shadow: 0 5px 15px rgba(245,197,24,0.4); }
+
+        /* Step 4 Config Stage */
+        .config-stage { background: rgba(5,5,5,0.8); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 30px; text-align: center; color: #fff; backdrop-filter: blur(10px); }
+        .car-stage { display: none; }
+        .cfg-film-name { background: rgba(255,255,255,0.05); color: var(--accent); padding: 15px; border-radius: 8px; font-weight: 800; text-transform: uppercase; font-size: 1.3rem; margin-bottom: 30px; border: 1px solid rgba(212,175,55,0.2); letter-spacing: 2px; }
+        
+        .cfg-tabs { display: flex; background: rgba(255,255,255,0.03); border-radius: 8px; margin-bottom: 25px; padding: 5px; border: 1px solid rgba(255,255,255,0.1); }
+        .cfg-tab { flex: 1; padding: 15px; border: none; background: transparent; color: #aaa; font-weight: 700; cursor: pointer; transition: all 0.3s ease; font-size: 1rem; border-radius: 6px; text-transform: uppercase; letter-spacing: 1px; }
+        .cfg-tab.active { background: rgba(212,175,55,0.15); color: var(--accent); box-shadow: inset 0 0 10px rgba(212,175,55,0.2); }
+        
+        .cfg-tones { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-bottom: 30px; }
+        .tone-btn { flex: 1; min-width: 80px; padding: 15px 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; font-size: 1.1rem; }
+        .tone-btn.selected, .tone-btn:hover { background: var(--accent); border-color: var(--accent); color: #000; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(212,175,55,0.3); }
+
+        /* Review Config Stage */
+        .rev-grid { display: flex; align-items: center; gap: 20px; padding: 20px; background: rgba(0,0,0,0.2); border-radius: 12px; margin-bottom: 20px; text-align: left; }
+        .rev-car { width: 120px; height: 80px; background-size: cover; background-position: center; border-radius: 8px; flex-shrink: 0; }
+        .rev-details { flex: 1; }
+
+        /* Blog Modal */
+        .blog-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10000; opacity: 0; pointer-events: none; transition: var(--trans); overflow-y: auto; }
+        .blog-modal.active { opacity: 1; pointer-events: auto; }
+        .blog-modal-content { max-width: 800px; margin: 50px auto; background: #111; border-radius: 12px; padding: 40px; color: #eee; position: relative; }
+        .blog-modal-close { position: absolute; top: 20px; right: 20px; font-size: 2rem; color: #fff; cursor: pointer; text-decoration: none; line-height: 1; }
+        .blog-hero-img { width: 100%; height: 300px; background-size: cover; background-position: center; border-radius: 12px; margin-bottom: 30px; }
+        .blog-content p { font-size: 1.05rem; line-height: 1.8; margin-bottom: 20px; color: #ccc; }
+        .blog-content h3 { font-size: 1.5rem; color: #fff; margin: 30px 0 15px; }
+
+        /* Footer */
+        footer { background: #000; padding: 60px 0 20px; border-top: 1px solid rgba(255,255,255,0.05); }
+        .foot-grid { display: grid; grid-template-columns: 2fr 1fr 1.5fr 1.5fr; gap: 40px; margin-bottom: 40px; }
+        .foot-col h4 { font-family: var(--font-h); font-size: 1.5rem; margin-bottom: 20px; }
+        .foot-col h5 { font-family: var(--font-h); font-size: 1.1rem; margin-bottom: 20px; color: #fff; border-bottom: 2px solid var(--accent); padding-bottom: 10px; display: inline-block; }
+        .foot-col ul { list-style: none; }
+        .foot-col ul li { margin-bottom: 10px; color: var(--text-dim); line-height: 1.6; }
+        .foot-col ul a { color: var(--text-dim); text-decoration: none; transition: var(--trans); }
+        .foot-col ul a:hover { color: var(--accent); padding-left: 5px; }
+        .foot-bot { text-align: center; color: #555; font-size: 0.85rem; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); }
+        
+        /* Floating Buttons & Social Icons */
+        .float-wpp { position: fixed; bottom: 30px; right: 30px; background: #25D366; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(37,211,102,0.4); z-index: 1000; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .float-wpp:hover { transform: scale(1.15) rotate(-10deg); box-shadow: 0 10px 25px rgba(37,211,102,0.7); background: #20b858; }
+        
+        .float-quote { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(5,5,5,0.8); backdrop-filter: blur(10px); color: var(--accent); padding: 10px 24px; border-radius: 40px; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; font-family: var(--font-p); letter-spacing: 2px; box-shadow: 0 5px 20px rgba(0,0,0,0.5); text-decoration: none; z-index: 1000; display: flex; align-items: center; gap: 8px; animation: pulseSutil 3s infinite; border: 1px solid rgba(212,175,55,0.3); transition: all 0.3s ease; }
+        .float-quote svg { width: 14px; height: 14px; }
+        .float-quote:hover { animation: none; transform: translateX(-50%) translateY(-2px); box-shadow: 0 8px 25px rgba(212,175,55,0.2); border-color: var(--accent); color: #fff; }
+        @keyframes pulseSutil {
+            0% { box-shadow: 0 0 0 0 rgba(212,175,55,0.2); }
+            70% { box-shadow: 0 0 0 10px rgba(212,175,55,0); }
+            100% { box-shadow: 0 0 0 0 rgba(212,175,55,0); }
+        }
+        
+        .social-icon { display: flex; align-items: center; justify-content: center; width: 45px; height: 45px; background: rgba(255,255,255,0.05); border-radius: 50%; color: #fff; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); text-decoration: none; border: 1px solid rgba(255,255,255,0.1); }
+        .social-icon:hover { background: var(--accent); color: #000; transform: translateY(-8px) scale(1.1); box-shadow: 0 15px 25px rgba(245,197,24,0.4); border-color: var(--accent); }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .hero h1 { font-size: 3rem; }
+            .contact-grid, .foot-grid { grid-template-columns: 1fr; }
+            .nav-links { display: none; position: absolute; top: 100%; left: 0; width: 100%; background: var(--elevated); flex-direction: column; padding: 20px; gap: 15px; }
+            .nav-links.active { display: flex; }
+            .mobile-btn { display: block; }
+            .float-quote { bottom: 20px; font-size: 0.8rem; padding: 12px 15px; width: calc(100% - 120px); left: 20px; transform: none; box-sizing: border-box; justify-content: center; }
+            .float-quote:hover { transform: scale(1.02); }
+        }
+    </style>
+</head>
+<body>
+    <div class="carbon-bg"></div>
+    <div class="glow-blob one"></div>
+    <div class="glow-blob two"></div>
+
+    <header id="header">
+        <div class="container nav-wrap">
+            <a href="#" class="logo">
+                <img src="images/logo.png" alt="Risada Film" style="height: 60px; filter: drop-shadow(0 0 10px rgba(255,255,0,0.3));">
+            </a>
+            <nav class="nav-links" id="nav-links">
+                <li><a href="#sobre">Sobre Nós</a></li>
+                <li><a href="#servicos">Serviços</a></li>
+                <li><a href="#diferenciais">Diferenciais</a></li>
+                <li><a href="#galeria">Projetos</a></li>
+                <li><a href="#blog">Blog</a></li>
+            </nav>
+            <button class="mobile-btn" id="mbtn">☰</button>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container hero-cont">
+            <h1>Proteção.<br>Estilo.<br><span class="text-gold">Performance.</span></h1>
+            <p><strong><span style="color: #FF0000;">Aplicador Autorizado 3M</span>.</strong> Especialistas em películas de alta tecnologia automotiva, residencial e comercial, <strong>PPF</strong> (Paint Protection Film), e <strong>Acessórios</strong>. Transforme seu veículo com o exclusivo sistema <strong>TECH-CUT</strong> de corte computadorizado.</p>
+            <div class="hero-btns" style="margin-bottom: 35px;">
+                <a href="#orcamento" class="btn btn-gold">Peça seu Orçamento</a>
+                <a href="https://wa.me/5511982787205" class="btn btn-outline" target="_blank">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12.031 0C5.385 0 0 5.385 0 12.031c0 2.128.548 4.195 1.587 6.007L.03 23.959l6.068-1.558a12.029 12.029 0 0 0 5.933 1.564v-.001c6.643 0 12.028-5.384 12.028-12.031S18.673 0 12.031 0zM12.031 21.652c-1.84 0-3.642-.495-5.215-1.428l-.374-.22-3.877.994 1.01-3.774-.242-.387a9.998 9.998 0 0 1-1.53-5.328c0-5.525 4.496-10.02 10.023-10.02 2.677 0 5.196 1.042 7.087 2.934 1.89 1.892 2.933 4.409 2.933 7.086 0 5.524-4.496 10.02-10.02 10.02zm5.498-7.509c-.302-.15-1.785-.88-2.062-.982-.276-.1-.478-.15-.678.15-.202.302-.782.982-.958 1.182-.176.2-.352.226-.654.076-1.164-.582-2.185-1.127-3.023-2.585-.213-.37-.02-.572.13-.72.136-.134.303-.353.454-.53.15-.175.202-.301.302-.501.101-.2.05-.376-.026-.526-.075-.15-.678-1.636-.928-2.242-.243-.588-.49-.508-.678-.517h-.58c-.201 0-.528.075-.805.375-.276.302-1.056 1.032-1.056 2.515s1.08 2.915 1.231 3.115c.15.2 2.122 3.235 5.14 4.537.718.309 1.278.494 1.716.632.721.228 1.378.196 1.894.12.576-.086 1.785-.73 2.037-1.434.25-.705.25-1.306.176-1.434-.075-.125-.276-.2-.578-.35z"/></svg> 
+                    WhatsApp
+                </a>
+            </div>
+            <div style="opacity:0; animation: fadeUp 1s ease forwards 0.8s; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 25px; max-width: 480px;">
+                <p style="font-size:0.8rem; text-transform:uppercase; letter-spacing:2px; margin-bottom:15px; color:#aaa; font-weight:600;">Tecnologia & Parceiros Oficiais</p>
+                <div style="display:flex; gap:30px; align-items:center;">
+                    <b style="font-family:var(--font-h); font-size:1.6rem; color:#fff;">3M</b>
+                    <b style="font-family:var(--font-h); font-size:1.4rem; color:#fff;">NexFilm</b>
+                    <b style="font-family:var(--font-h); font-size:1.4rem; color:#fff;">xlcontrol</b>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="3d-model" style="background: #000; padding: 60px 0; text-align: center;">
+        <div class="container">
+            <h2 class="section-title reveal">Visualize em <span class="text-gold">3D</span></h2>
+            <p class="section-subtitle reveal">Explore nossos modelos e imagine a proteção perfeita para o seu veículo.</p>
+            <model-viewer 
+                src="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/ToyCar/glTF-Binary/ToyCar.glb" 
+                alt="3D Car Model" 
+                auto-rotate 
+                camera-controls 
+                shadow-intensity="1" 
+                style="width: 100%; height: 500px; background: transparent; cursor: grab;">
+            </model-viewer>
+        </div>
+    </section>
+
+    <section class="diff-sec" id="diferenciais">
+        <div class="container">
+            <h2 class="section-title reveal">Por que a <span class="brand-text">Risada Film?</span></h2>
+            <p class="section-subtitle reveal">Os detalhes que fazem a diferença em nosso atendimento.</p>
+            <div class="diff-grid">
+                <div class="diff-item reveal">
+                    <div class="icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+                    <h3>Alta Performance</h3><p>Até 99% de bloqueio UV.</p>
+                </div>
+                <div class="diff-item reveal" style="transition-delay: 0.1s;">
+                    <div class="icon" style="color: #FF0000; border-color: rgba(255,0,0,0.3);"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+                    <h3>Autorizado 3M</h3><p>Instalador credenciado com selo de garantia internacional 3M.</p>
+                </div>
+                <div class="diff-item reveal" style="transition-delay: 0.2s;">
+                    <div class="icon" style="color: #00BFFF; border-color: rgba(0,191,255,0.3);"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg></div>
+                    <h3>Tech-Cut</h3><p>Utilizamos sistema <b>TECH-CUT</b> para corte computadorizado de alta precisão.</p>
+                </div>
+                <div class="diff-item reveal" style="transition-delay: 0.3s;">
+                    <div class="icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/></svg></div>
+                    <h3>SP Capital</h3><p>Localização fácil na Vila Bela.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="sobre" style="background: var(--elevated);">
+        <div class="container">
+            <h2 class="section-title reveal">Sobre a <span class="brand-text">Risada Film</span></h2>
+            <p class="section-subtitle reveal">Mais de 10 anos de experiência em películas automotivas e arquitetônicas.</p>
+            <div style="display:flex; flex-wrap:wrap; gap:40px; align-items:center;">
+                <div style="flex:1; min-width:300px;">
+                    <img src="images/fachada_loja.png" alt="Sobre a Risada Film" style="width:100%; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+                </div>
+                <div style="flex:1; min-width:300px;">
+                    <h3 style="font-size:1.8rem; margin-bottom:20px; font-family:var(--font-b); font-weight:800; text-transform:uppercase;">Nosso compromisso é a sua <span class="text-gold">satisfação</span>.</h3>
+                    <p style="color:var(--text-dim); margin-bottom:15px; font-size:1.05rem;">Na Risada Film, somos apaixonados por transformar automóveis e arquiteturas. Com mais de uma década de experiência, nos tornamos referência na aplicação de películas de alta performance para veículos, residências e comércios na grande São Paulo.</p>
+                    <p style="color:var(--text-dim); margin-bottom:20px;">Trabalhamos com as melhores marcas do mercado, como <strong>3M</strong>, <strong>STEK</strong> e <strong>ApexFilm</strong>, garantindo produtos de ponta e durabilidade incomparável. Nossa equipe é altamente qualificada e utiliza o exclusivo sistema de corte computadorizado <strong>TECH-CUT</strong>, assegurando precisão e acabamento impecável em cada projeto.</p>
+                    <a href="#orcamento" class="btn btn-gold">Fale Conosco</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="servicos">
+        <div class="container">
+            <h2 class="section-title reveal">Nossos <span class="text-gold">Serviços</span></h2>
+            <p class="section-subtitle reveal">Oferecemos soluções completas em películas tecnológicas e customização premium.</p>
+            
+            <div class="grid-4">
+                <div class="card reveal">
+                    <div class="card-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M5 11V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4"/></svg></div>
+                    <h3>Película Automotiva</h3>
+                    <p>Controle térmico, segurança, privacidade e estética. Alta rejeição de calor e bloqueio UV.</p>
+                </div>
+                <div class="card reveal" style="transition-delay: 0.1s;">
+                    <div class="card-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
+                    <h3>Envelopamento & PPF</h3>
+                    <p>Personalize seu veículo com cores exclusivas e texturas premiums. Alta proteção contra riscos e pedras com Paint Protection Film (PPF).</p>
+                </div>
+                <div class="card reveal" style="transition-delay: 0.2s;">
+                    <div class="card-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
+                    <h3>Película Residencial</h3>
+                    <p>Conforto térmico, redução de brilho em TVs e privacidade para sua família, protegendo os móveis.</p>
+                </div>
+                <div class="card reveal" style="transition-delay: 0.3s;">
+                    <div class="card-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/></svg></div>
+                    <h3>Película Comercial</h3>
+                    <p>Soluções para vitrines e divisórias. Estética padronizada e eficiência energética nas fachadas.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <section id="galeria">
+        <div class="container">
+            <h2 class="section-title reveal">Nosso <span class="text-gold">Portfólio</span></h2>
+            <div class="gal-grid">
+                <!-- Items -->
+                <div class="gal-item reveal" onclick="openLightbox('images/sports_car_tint.png', 'Mclaren Black Tint')">
+                    <div class="gal-mock" style="background-image: url('images/sports_car_tint.png')"></div>
+                    <div class="gal-overlay"><h4>Mclaren</h4><p>Película Nano Carbono Black</p></div>
+                </div>
+                <div class="gal-item reveal delay-1" onclick="openLightbox('images/house.png', 'Projeto Residencial')">
+                    <div class="gal-mock" style="background-image: url('images/house.png')"></div>
+                    <div class="gal-overlay"><h4>Arquitetura</h4><p>Película de Rejeição de Calor</p></div>
+                </div>
+                <div class="gal-item reveal delay-2" onclick="openLightbox('images/car_washing_foam.png', 'Lavagem Premium')">
+                    <div class="gal-mock" style="background-image: url('images/car_washing_foam.png')"></div>
+                    <div class="gal-overlay"><h4>Detailing</h4><p>Lavagem Preparatória para PPF</p></div>
+                </div>
+                <div class="gal-item reveal" onclick="openLightbox('images/car_ppf_application.png', 'Aplicação de PPF Stek')">
+                    <div class="gal-mock" style="background-image: url('images/car_ppf_application.png')"></div>
+                    <div class="gal-overlay"><h4>Instalação PPF</h4><p>Aplicação em BMW com sistema Tech-Cut</p></div>
+                </div>
+                <div class="gal-item reveal delay-1" onclick="openLightbox('images/sunroof_tint.png', 'Proteção de Teto Solar')">
+                    <div class="gal-mock" style="background-image: url('images/sunroof_tint.png')"></div>
+                    <div class="gal-overlay"><h4>Teto Panorâmico</h4><p>Película Confort IR 95% Rejeição</p></div>
+                </div>
+                <div class="gal-item reveal delay-2" onclick="openLightbox('images/black_car_window_tint.png', 'Range Rover PPF Frontal')">
+                    <div class="gal-mock" style="background-image: url('images/black_car_window_tint.png')"></div>
+                    <div class="gal-overlay"><h4>Range Rover</h4><p>PPF Auto-regenerativo Frontal</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Parceiros -->
+    <section id="parceiros" style="padding: 60px 0; background: #080808; border-top:1px solid rgba(255,255,255,0.05); border-bottom:1px solid rgba(255,255,255,0.05);">
+        <div class="container" style="text-align:center;">
+            <p style="color:var(--text-dim); font-size:0.9rem; margin-bottom:20px; text-transform:uppercase; letter-spacing:2px;">Marcas Parceiras & Tecnologia</p>
+            <div style="display:flex; justify-content:center; gap:50px; flex-wrap:wrap; align-items:center;">
+                <h3 style="color:#555; font-family:var(--font-h); font-size:2rem; margin:0;">3M</h3>
+                <h3 style="color:#555; font-family:var(--font-h); font-size:2rem; margin:0;">TECH-CUT</h3>
+                <h3 style="color:#555; font-family:var(--font-h); font-size:2rem; margin:0;">NexFilm</h3>
+                <h3 style="color:#555; font-family:var(--font-h); font-size:2rem; margin:0;">xlcontrol</h3>
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog Section -->
+    <section id="blog" style="padding: 100px 0; background: #050505;">
+        <div class="container reveal">
+            <h2 class="section-title">Blog & <span class="text-gold">Dicas</span></h2>
+            <p class="section-subtitle">Fique por dentro das novidades e processos de alto impacto</p>
+            <div id="blog-grid" class="foot-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+                <!-- Javascript will inject Blog Posts here dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog Read Modal -->
+    <div id="blog-modal" class="blog-modal">
+        <div class="blog-modal-content">
+            <a class="blog-modal-close" onclick="document.getElementById('blog-modal').classList.remove('active')">&times;</a>
+            <div id="m-blog-img" class="blog-hero-img"></div>
+            <span id="m-blog-cat" style="color:var(--accent); font-size:0.9rem; font-weight:700; text-transform:uppercase;"></span>
+            <h2 id="m-blog-title" style="font-size: 2.2rem; margin: 10px 0 20px; color: #fff;"></h2>
+            <div id="m-blog-content" class="blog-content"></div>
+        </div>
+    </div>
+
+
+    <section id="avaliacoes" style="background: var(--elevated);">
+        <div class="container">
+            <h2 class="section-title reveal">O que dizem os <span class="text-gold">Clientes</span></h2>
+            <div class="rating-box reveal">
+                <div class="score">4.7</div>
+                <div class="stars">★★★★★</div>
+                <div style="color:var(--text-dim); font-size: 0.9rem;">58 avaliações no Google</div>
+            </div>
+            <div class="rev-grid">
+                <div class="rev-card reveal">
+                    <div class="rev-head"><div class="avatar">M</div><div><h4 style="color:#fff;">Marcelo Almeida</h4><div style="color:var(--accent);">★★★★★</div></div></div>
+                    <p>"Serviço impecável! Coloquei película e a diferença de calor é absurda. Atendimento top."</p>
+                </div>
+                <div class="rev-card reveal" style="transition-delay: 0.1s;">
+                    <div class="rev-head"><div class="avatar">L</div><div><h4 style="color:#fff;">Luciana Tavares</h4><div style="color:var(--accent);">★★★★★</div></div></div>
+                    <p>"Envelopamento ficou perfeito, sem bolhas. Extremamente detalhistas e rápidos."</p>
+                </div>
+                <div class="rev-card reveal" style="transition-delay: 0.2s;">
+                    <div class="rev-head"><div class="avatar">R</div><div><h4 style="color:#fff;">Ricardo C.</h4><div style="color:var(--accent);">★★★★★</div></div></div>
+                    <p>"Instalaram na minha varanda. Acabou o reflexo na TV e o ambiente ficou ótimo. Recomendo."</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="orcamento">
+        <div class="container">
+            <h2 class="section-title reveal">Peça seu <span class="text-gold">Orçamento</span></h2>
+            <div style="max-width: 800px; margin: 0 auto; min-height: 480px;">
+                <div class="form-box reveal" id="simulator-container">
+                    <div id="step-1" class="sim-step active">
+                        <div class="step-header">
+                            <h3 style="color:#fff;">1. Selecione a Marca</h3>
+                            <p style="color:var(--text-dim); font-size:0.9rem;">Para iniciarmos a simulação do orçamento.</p>
+                        </div>
+                        <div class="brands-grid" id="brands-grid"></div>
+                    </div>
+                    
+                    <div id="step-2" class="sim-step">
+                        <div class="step-header">
+                            <h3 style="color:#fff;">2. Modelo do seu <span id="lbl-brand" class="text-gold"></span></h3>
+                        </div>
+                        <div class="models-grid" id="models-grid"></div>
+                        <button class="btn btn-outline" onclick="simGoTo(1)">Voltar</button>
+                    </div>
+
+                    <div id="step-3" class="sim-step">
+                        <div class="step-header">
+                            <h3 style="color:#fff;">3. Escolha o Serviço</h3>
+                            <p style="color:var(--text-dim); font-size:0.9rem;">Selecione uma Película ou Envelopamento.</p>
+                        </div>
+                        <div class="films-list" id="films-list"></div>
+                        <button class="btn btn-outline" onclick="simGoTo(2)">Voltar</button>
+                    </div>
+
+                    <div id="step-4" class="sim-step">
+                        <div class="step-header">
+                            <h3 style="color:#fff;">4. Configuração</h3>
+                            <p style="color:var(--text-dim); font-size:0.9rem;">Escolha a tonalidade.</p>
+                        </div>
+                        <div class="config-stage">
+                            <div class="car-stage" style="background-image: url('images/black_car.png');"></div>
+                            <div class="cfg-film-name" id="cfg-film">Nano Cerâmica</div>
+                            
+                            <div class="cfg-tabs">
+                                <button type="button" class="cfg-tab active" id="tab-para" onclick="setCfgTab('para')">Para-brisa</button>
+                                <button type="button" class="cfg-tab" id="tab-lat" onclick="setCfgTab('lat')">Laterais</button>
+                            </div>
+                            
+                            <div class="cfg-tones" id="tones-para">
+                                <button type="button" class="tone-btn selected" onclick="setTone('para', 'G35', this)">G35<br><span style="font-size:0.75rem;font-weight:500;opacity:0.8;display:block;margin-top:2px;text-transform:capitalize;letter-spacing:0;">Intermediário</span></button>
+                                <button type="button" class="tone-btn" onclick="setTone('para', 'G50', this)">G50<br><span style="font-size:0.75rem;font-weight:500;opacity:0.8;display:block;margin-top:2px;text-transform:capitalize;letter-spacing:0;">Claro</span></button>
+                                <button type="button" class="tone-btn" onclick="setTone('para', 'G70', this)">G70<br><span style="font-size:0.75rem;font-weight:500;opacity:0.8;display:block;margin-top:2px;text-transform:capitalize;letter-spacing:0;">Muito Claro</span></button>
+                                <button type="button" class="tone-btn" onclick="setTone('para', 'Incolor', this)">Transp<br><span style="font-size:0.75rem;font-weight:500;opacity:0.8;display:block;margin-top:2px;text-transform:capitalize;letter-spacing:0;">Invisível</span></button>
+                            </div>
+
+                            <div class="cfg-tones" id="tones-lat" style="display:none;">
+                                <button type="button" class="tone-btn" onclick="setTone('lat', 'G5', this)">G5<br><span style="font-size:0.75rem;font-weight:500;opacity:0.8;display:block;margin-top:2px;text-transform:capitalize;letter-spacing:0;">Muito Escuro</span></button>
+                                <button type="button" class="tone-btn selected" onclick="setTone('lat', 'G20', this)">G20<br><span style="font-size:0.75rem;font-weight:500;opacity:0.8;display:block;margin-top:2px;text-transform:capitalize;letter-spacing:0;">Padrão</span></button>
+                                <button type="button" class="tone-btn" onclick="setTone('lat', 'G35', this)">G35<br><span style="font-size:0.75rem;font-weight:500;opacity:0.8;display:block;margin-top:2px;text-transform:capitalize;letter-spacing:0;">Intermediário</span></button>
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:15px; margin-top:20px;">
+                            <button type="button" class="btn btn-gold" style="flex:1" onclick="simGoTo(5)">Próximo</button>
+                            <button type="button" class="btn btn-outline" onclick="simGoTo(3)">Voltar</button>
+                        </div>
+                    </div>
+
+                    <div id="step-5" class="sim-step" style="text-align:center;">
+                        <h3 style="color:#fff; margin-bottom: 20px; font-family:var(--font-h);">Revisão</h3>
+                        <div class="rev-grid">
+                            <div class="rev-car" style="background-image: url('images/black_car.png');"></div>
+                            <div class="rev-details">
+                                <h4 id="rev-film-name" style="color:var(--accent); font-size:1.4rem; margin-bottom:5px;">Film</h4>
+                                <p id="rev-film-desc" style="font-size:0.8rem; color:var(--text-dim); margin-bottom:10px;"></p>
+                                <div style="display:flex; justify-content:space-between; background:rgba(0,0,0,0.05); padding:8px; border-radius:8px; margin-bottom:15px; font-size:0.8rem; color:var(--text);">
+                                    <span><b>Parabrisa:</b> <span id="rev-para"></span></span>
+                                    <span><b>Laterais:</b> <span id="rev-lat"></span></span>
+                                </div>
+                                <div class="specs" style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:15px; color:var(--text-dim); background:#fff; padding:10px; border-radius:8px;">
+                                    <span id="rev-uv">UV: </span>
+                                    <span id="rev-term">Term.: </span>
+                                </div>
+                                <div id="rev-gar" style="font-size:0.85rem; color:var(--text); font-weight:700;"></div>
+                            </div>
+                        </div>
+                        <div class="fg" style="text-align:left;"><label style="color:var(--text);">Seu Nome Completo</label><input type="text" id="sim-nome" class="fc" style="background:#fff; color:#000; border-color:#ccc;" placeholder="Ex: João Silva"></div>
+                        <div style="display:flex; gap:15px; margin-top:20px;">
+                            <button type="button" class="btn btn-gold" style="flex:1" onclick="simSendWA()">Baixar PDF e Enviar WhatsApp</button>
+                            <button type="button" class="btn btn-outline" style="color:#fff; border-color:rgba(255,255,255,0.2);" onclick="simGoTo(4)">Voltar</button>
+                        </div>
+                    </div>
+
+                    <div id="step-6" class="sim-step" style="text-align:center; padding: 40px 20px;">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#25D366" stroke-width="2" style="margin-bottom:20px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14M22 4L12 14.01l-3-3"/></svg>
+                        <h3 style="color:#fff; margin-bottom: 10px;">Orçamento enviado!</h3>
+                        <p style="color:#aaa; font-size:0.9rem;">Em breve entraremos em contato com seu orçamento pelo WhatsApp!</p>
+                        <button type="button" class="btn btn-outline" style="margin-top:30px; color:#fff; border-color:rgba(255,255,255,0.2);" onclick="window.location.reload()">Fazer nova simulação</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="foot-grid">
+                <div class="foot-col">
+                    <img src="images/logo.png" alt="Risada Film Logo" style="height: 60px; margin-bottom: 20px;">
+                    <h4>Risada Film</h4>
+                    <p style="color:var(--text-dim);">Autoridade e exclusividade em estética e proteção automotiva na grande São Paulo.</p>
+                </div>
+                <div class="foot-col">
+                    <h5>Menu</h5>
+                    <ul>
+                        <li><a href="#sobre">Sobre Nós</a></li>
+                        <li><a href="#servicos">Serviços</a></li>
+                        <li><a href="#diferenciais">Diferenciais</a></li>
+                        <li><a href="#galeria">Projetos</a></li>
+                        <li><a href="#blog">Blog</a></li>
+                    </ul>
+                </div>
+                <div class="foot-col">
+                    <h5>Contato & Redes</h5>
+                    <ul>
+                        <li><b style="color:#fff;">WA:</b> <a href="https://wa.me/5511982787205" target="_blank" style="color:var(--accent);">(11) 98278-7205</a><br><span style="padding-left:35px;">(11) 94720-4778</span></li>
+                        <li><b style="color:#fff;">E:</b> risadafilm@gmail.com</li>
+                        <li><b style="color:#fff;">H:</b> Seg-Sáb 08h às 18h</li>
+                    </ul>
+                    <div style="display:flex; gap:15px; margin-top:20px;">
+                        <a href="https://www.instagram.com/risada_film/" target="_blank" class="social-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                        </a>
+                        <a href="https://wa.me/5511982787205" target="_blank" class="social-icon" style="background:rgba(37,211,102,0.1); color:#25D366; border-color:#25D366;">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                        </a>
+                    </div>
+                </div>
+                <div class="foot-col">
+                    <h5>Localização</h5>
+                    <ul>
+                        <li><b style="color:#fff;">R. Paramu, 612</b><br>Vila Bela<br>São Paulo - SP<br>03147-100</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="foot-bot" style="line-height: 1.8;">
+                © <script>document.write(new Date().getFullYear())</script> Risada Film. Todos os direitos reservados. Feito para alta conversão.<br>
+                <span style="color: var(--text-dim); font-size: 0.75rem;">Risada Comercio de Pelicula Solar Ltda - CNPJ: 33.574.274/0001-43</span>
+            </div>
+        </div>
+    </footer>
+
+    <a href="https://wa.me/5511982787205" target="_blank" class="float-wpp">
+        <svg viewBox="0 0 24 24" width="34" height="34" fill="currentColor"><path d="M12.031 0C5.385 0 0 5.385 0 12.031c0 2.128.548 4.195 1.587 6.007L.03 23.959l6.068-1.558a12.029 12.029 0 0 0 5.933 1.564v-.001c6.643 0 12.028-5.384 12.028-12.031S18.673 0 12.031 0zM12.031 21.652c-1.84 0-3.642-.495-5.215-1.428l-.374-.22-3.877.994 1.01-3.774-.242-.387a9.998 9.998 0 0 1-1.53-5.328c0-5.525 4.496-10.02 10.023-10.02 2.677 0 5.196 1.042 7.087 2.934 1.89 1.892 2.933 4.409 2.933 7.086 0 5.524-4.496 10.02-10.02 10.02zm5.498-7.509c-.302-.15-1.785-.88-2.062-.982-.276-.1-.478-.15-.678.15-.202.302-.782.982-.958 1.182-.176.2-.352.226-.654.076-1.164-.582-2.185-1.127-3.023-2.585-.213-.37-.02-.572.13-.72.136-.134.303-.353.454-.53.15-.175.202-.301.302-.501.101-.2.05-.376-.026-.526-.075-.15-.678-1.636-.928-2.242-.243-.588-.49-.508-.678-.517h-.58c-.201 0-.528.075-.805.375-.276.302-1.056 1.032-1.056 2.515s1.08 2.915 1.231 3.115c.15.2 2.122 3.235 5.14 4.537.718.309 1.278.494 1.716.632.721.228 1.378.196 1.894.12.576-.086 1.785-.73 2.037-1.434.25-.705.25-1.306.176-1.434-.075-.125-.276-.2-.578-.35z"/></svg> 
+    </a>
+
+    <a href="#orcamento" class="float-quote">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        SOLICITE SEU ORÇAMENTO JÁ
+    </a>
+
+    <script>
+        // Header scroll effect
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('header');
+            if (window.scrollY > 50) header.classList.add('scrolled');
+            else header.classList.remove('scrolled');
+        });
+
+        // Mobile Menu
+        const mbtn = document.getElementById('mbtn');
+        const navLinks = document.getElementById('nav-links');
+        mbtn.addEventListener('click', () => { navLinks.classList.toggle('active'); });
+
+        // Scroll Reveal
+        const reveals = document.querySelectorAll('.reveal');
+        const revealOnScroll = () => {
+            const wHeight = window.innerHeight;
+            reveals.forEach(el => {
+                const elTop = el.getBoundingClientRect().top;
+                if(elTop < wHeight - 100) el.classList.add('active');
+            });
+        };
+        window.addEventListener('scroll', revealOnScroll);
+        revealOnScroll(); // init
+
+        // Simulator Logic
+        const carData = {
+            'VW': ['Polo', 'Nivus', 'T-Cross', 'Virtus', 'Taos', 'Jetta'],
+            'Chevrolet': ['Onix', 'Tracker', 'Montana', 'S10', 'Cruze'],
+            'Fiat': ['Argo', 'Pulse', 'Fastback', 'Toro', 'Strada'],
+            'Toyota': ['Corolla', 'Corolla Cross', 'Hilux', 'Yaris'],
+            'Jeep': ['Renegade', 'Compass', 'Commander'],
+            'Hyundai': ['HB20', 'Creta', 'Tucson'],
+            'Honda': ['Civic', 'HR-V', 'City', 'ZR-V'],
+            'BYD': ['Dolphin', 'Seal', 'Yuan Plus'],
+            'GWM': ['Haval H6', 'Ora 03'],
+            'Outros / Casas': ['Outro Modelo', 'Residencial', 'Comercial']
+        };
+
+        const filmData = [
+            { id: 'nano_cer', name: 'Nano Cerâmica', desc: 'Película avançada com tecnologia cerâmica. Eleva a proteção solar com visibilidade cristalina.', uv: '99%', term: '90%', gar: '10 anos' },
+            { id: 'comfort_cer', name: 'Confort IR', desc: 'Película com rejeição de infravermelho indicada para máximo conforto térmico e redução expressiva de calor.', uv: '99%', term: '75 a 95%', gar: '5 anos' },
+            { id: 'nano_carb', name: 'Nano Carbono', desc: 'Tecnologia Nano Carbono focada em extrema privacidade. Bloqueio 82% infravermelho e 99% UV.', uv: '99%', term: '82%', gar: '5 anos' },
+            { id: 'av_3m', name: 'Anti Vandalismo 3M', desc: 'Película semi blindada. Seu carro sempre protegido contra impactos ou estilhaços, garantindo tranquilidade.', uv: '99%', term: '50%', gar: '10 anos' },
+            { id: 'av_ps8000', name: 'Anti Vandalismo PS8', desc: 'Película de segurança super espessa (PS8000). Proteção física de altíssimo nível contra roubos rápidos.', uv: '99%', term: '40%', gar: '5 anos' },
+            { id: 'av_ps4000', name: 'Anti Vandalismo PS4', desc: 'Proteção essencial em centros urbanos. Previne estilhaços por pequenos impactos com custo-benefício.', uv: '99%', term: '30%', gar: '3 anos' },
+            { id: '3m_color_stable', name: '3M Color Stable', desc: 'Aparência escura impecável, resistente ao desbotamento. Estética automotiva perfeita e premium.', uv: '99%', term: '60%', gar: '10 anos' },
+            { id: 'comum', name: 'Profissional', desc: 'Película de entrada com visual elegante, acabamento discreto, ideal para privacidade no dia a dia.', uv: '95%', term: '10 a 25%', gar: '1 ano' },
+            { id: 'ppf', name: 'Paint Protection (PPF)', desc: 'Adesivo transparente auto-regenerativo. Proteção suprema contra riscos na pintura e impactos de pedras.', uv: '100%', term: 'N/A', gar: '10 anos' }
+        ];
+
+        // 📝 SISTEMA DE BLOG 100% IA
+        // Para adicionar um post novo: Mande a IA gerar um objeto igual a este e cole como o primeiro item do array!
+        const blogPosts = [
+            {
+                category: 'SEGURANÇA E BLINDAGEM',
+                title: 'Por que investir em uma Película Antivandalismo?',
+                excerpt: 'Saiba como blindar os vidros do seu carro contra impactos, prevenir assaltos rápidos e garantir a segurança da sua família.',
+                image: 'images/black_car.png',
+                content: `
+                        <p>A segurança nas ruas de grandes cidades como São Paulo é uma prioridade inegociável. Cada vez mais, motoristas buscam soluções para proteger não apenas o interior do carro contra o sol, mas a própria integridade física dos passageiros: é aí que entra a incrível <b>Película Antivandalismo</b>.</p>
+                        
+                        <h3 style="color:#d4a017;">O que é a Película Antivandalismo?</h3>
+                        <p>Diferente de um insulfilm comum que apenas escurece o vidro, as películas de segurança (como as séries PS4000 e PS8000 que aplicamos na <span class="brand-text">Risada Film</span>) são compostas por múltiplas lâminas de poliéster ultra-resistentes e uma camada de adesivo estrutural muito densa.</p>
+                        
+                        <h3 style="color:#d4a017;">Principais Benefícios:</h3>
+                        <p><b>1. Atraso em Roubos Rápidos:</b> O tempo é o pior inimigo de quem tenta quebrar o vidro de um carro. Ao dificultar severamente o rompimento das janelas, a maioria das tentativas de invasão aos semáforos é abandonada no meio.</p>
+                        <p><b>2. Antiestilhaçamento:</b> Em caso de acidente de trânsito, a película evita que os fragmentos voem em direção ao seu rosto ou aos passageiros do banco de trás, agindo como uma rede de contenção flexível.</p>
+                        <p><b>3. Benefício 2 em 1: Estética e Térmico:</b> Opções modernas como a <i>Anti Vandalismo 3M</i> e a <i>ApexFilm</i> fornecem rejeição de calor impressionante e tons de escurecimento (G20, G5) para máxima privacidade visual. É segurança máxima sem comprometer o design escurecido e o Dark Mode do seu carro.</p>
+                        
+                        <p><br>As películas de segurança precisam de aplicação por uma equipe altamente rigorosa, utilizando as melhores técnicas de espatulação. Venha na <span class="brand-text">Risada Film</span> conhecer as opções que salvam vidas!</p>
+                `
+            },
+            {
+                id: 'nano-vs-carbono',
+                category: 'GUIA TÉCNICO',
+                title: 'Qual a diferença entre Nano Cerâmica e Carbono?',
+                excerpt: 'Descubra qual película premium é a mais indicada para as suas necessidades de proteção térmica e visual.',
+                image: 'images/suv_matte.png',
+                content: `
+                    <p>Muitos clientes chegam até a Risada Film com a seguinte dúvida: <b>"Qual película devo colocar, Nano Cerâmica ou Nano Carbono?"</b> Existem muitos mitos na internet, mas a resposta exata depende de qual é a sua principal necessidade.</p>
+                    <h3>1. Tecnologia Nano Cerâmica</h3>
+                    <p>A película Nano Cerâmica, como a Confort IR que oferecemos, é a campeã indiscutível de <b>rejeição de calor (Proteção Térmica)</b> e da visibilidade. Sendo composta por nano-partículas cerâmicas que não escurecem absurdamente a janela, ela consegue bloquear até 90% do calor sem impedir a visão do motorista (visibilidade cristalina de dentro para fora).</p>
+                    <h3>2. Tecnologia Nano Carbono</h3>
+                    <p>Já a película de Nano Carbono foca em estabilidade de cor (visual extremamente negro matte e fosco, sofisticado por fora) e excelente privacidade. Devido à base de carbono puro, ela também oferece uma ótima rejeição de calor (em média 75 a 82%), mas sua principal proposta é o visual privativo com altíssimo conforto no dia-a-dia.</p>
+                    <p><b>Conclusão:</b> Se você quer dirigir num ambiente congelante sem escurecer muito o carro = Nano Cerâmica. Se você quer o carro extremamente escuro por fora, duradouro e estiloso = Nano Carbono.</p>
+                `
+            },
+            {
+                id: 'tudo-sobre-ppf',
+                category: 'PROTEÇÃO',
+                title: 'Tudo sobre PPF (Paint Protection Film)',
+                excerpt: 'Entenda por que o envelopamento transparente é o melhor investimento para blindar a pintura do zero.',
+                image: 'images/ppf.png',
+                content: `
+                    <p>Se você comprou um carro zero, as ruas brasileiras oferecem um perigo constante. Pequenas pedras nas estradas, arranhões em estacionamentos, e lavadeiras que criam hologramas.</p>
+                    <h3>A Blindagem Transparente: PPF</h3>
+                    <p>O <b>Paint Protection Film (PPF)</b> é uma película de poliuretano altamente flexível, invisível e extremamente grossa. Diferente de um selamento cerâmico (que não impede o impacto de uma pedra forte), o PPF age como um "plástico absorvente" na sua lataria.</p>
+                    <p>O melhor de tudo? As películas PPF modernas que usamos aqui na <b>Risada Film</b> possuem tecnologia auto-regenerativa. Isso significa que se alguém riscar o PPF do seu carro com uma chave, basta colocar um soprador quente ou deixar no sol que o material "derrete" e volta ao estado liso original.</p>
+                    <p>Proteja seu investimento antes que o primeiro arranhão ocorra. Um carro com pintura de fábrica intacta perde muito menos valor de revenda, muitas vezes pagando imediatamente o valor aplicado no PPF.</p>
+                `
+            },
+            {
+                id: 'pelicula-residencial',
+                category: 'ARQUITETURA',
+                title: 'Privacidade e economia em ambientes residenciais',
+                excerpt: 'Aplicações de alto design em varandas e janelas de escritórios que reduzem expressivamente a refração solar.',
+                image: 'images/house.png',
+                content: `
+                    <p>Trabalhar em um ambiente em que o sol reflete diretamente na tela do seu computador pode acabar com a sua produtividade diária (ou tornar impossível deparar-se com a sua TV da sala).</p>
+                    <h3>A Revolução do Película Arquitetônica</h3>
+                    <p>As <b>películas arquitetônicas</b> têm um propósito duplo: economia real de energia e conforto estético. Quando o sol bate em uma janela sem película térmica avançada, seu ar-condicionado precisa gastar mais de 40% de energia extra para conseguir quebrar a inércia térmica.</p>
+                    <p>Aplicando o material moderno pelas mãos da Risada Film minimiza-se a refração de luz e rejeita-se até 85% dos raios infravermelhos (responsáveis pelo "bafo quente" próximo à janela).</p>
+                    <p>Entre em contato hoje para avaliarmos suas sacadas e vitrines corporativas. Você e o seu bolso notarão a diferença no primeiro mês.</p>
+                `
+            },
+            {
+                id: 'teto-solar',
+                category: 'CUIDADOS',
+                title: '5 Motivos para instalar película no Teto Solar',
+                excerpt: 'Não basta proteger as laterais. O teto solar é a maior fonte de calor direto no interior do seu veículo.',
+                image: 'images/sunroof_tint.png',
+                content: `
+                    <p>Muitos clientes aplicam filmes de altíssima performance nas laterais e para-brisa, mas se esquecem do teto solar panorâmico, que age como uma verdadeira estufa nos dias de verão.</p>
+                    
+                    <h3 style="color:#d4a017;">1. Redução Extrema de Calor</h3>
+                    <p>Películas de Nano Cerâmica aplicadas no teto bloqueiam esmagadora parte do calor infravermelho de atingir a cabeça dos passageiros, o que muda completamente o conforto interno e exige menos força do ar-condicionado.</p>
+                    
+                    <h3 style="color:#d4a017;">2. Proteção UV</h3>
+                    <p>Você não quer raios malignos incidindo diretamente na sua pele durante viagens longas. O fator FPS 1000 da película previne o envelhecimento precoce e manchas.</p>
+                    
+                    <h3 style="color:#d4a017;">3. Segurança Contra Estilhaços</h3>
+                    <p>Se uma pedra ou granizo forte atingir seu teto panorâmico rachando o vidro exposto, a película evita que a chuva de cacos soltos caia no banco de trás, resguardando os passageiros infantis.</p>
+                    
+                    <p><br>Passe na <b>Risada Film</b> e faça o teto solar do seu carro ser tão tecnológico quanto o resto dele.</p>
+                `
+            },
+            {
+                id: 'lavagem-ppf',
+                category: 'DICAS TÉCNICAS',
+                title: 'Como lavar corretamente seu carro com PPF',
+                excerpt: 'Dicas essenciais de detalhamento para manter o seu Paint Protection Film brilhando impecável por muito mais de 10 anos.',
+                image: 'images/car_washing_foam.png',
+                content: `
+                    <p>O Envelopamento Transparente <b>(PPF)</b> é inegavelmente um dos investimentos mais formidáveis da estética moderna. Ele blinda sua pintura, no entanto, para estender a durabilidade auto-regenerativa, sua lavagem precisa ser correta.</p>
+                    
+                    <h3 style="color:#d4a017;">Uso de Dois Baldes e Shampoo Neutro</h3>
+                    <p>Sempre solicite que lavem seu veículo com a técnica internacional dos *2 baldes* para evitar arrastes de areia ou partículas. Ceras severas, ácidos de lava-rápidos e polidores convencionais estão estritamente proibidos em PPF.</p>
+                    
+                    <h3 style="color:#d4a017;">Cuidado com Lava Jatadoras de Pressão</h3>
+                    <p>O lavador de pressão direcional forte (A "WAP") não deve ser apontado à menos de 40cm das beiradas e quinas da lataria (local das frestas), pois pode ocasionar um levantamento desnecessário das bordas da película através da pressão hídrica forçada.</p>
+                    
+                    <p><br>As películas originais de PPF aplicadas na <b>Risada Film</b> possuem alto nível hidrofóbico, sendo super fácies de lavar na mão. Mantenha os simples cuidados acima e tenha o visual inalterável!</p>
+                `
+            }
+        ];
+
+        let simState = { brand: '', model: '', filmName: '', para: 'G35', lat: 'G20' };
+
+        const brandLogos = {
+            'VW': 'VW', 'Chevrolet': 'GM', 'Fiat': 'FIAT', 'Toyota': 'TYT', 'Jeep': 'JEEP', 'Hyundai': 'HYD', 'Honda': 'HND', 'BYD': 'BYD', 'GWM': 'GWM', 'Outros / Casas': '➕'
+        };
+
+        const bgGrid = document.getElementById('brands-grid');
+        Object.keys(carData).forEach(b => {
+            const btn = document.createElement('button');
+            btn.className = 'sim-btn-brand';
+            btn.innerHTML = `<div style="font-size:1.6rem; font-family:var(--font-h); color:var(--accent); font-weight:800; letter-spacing:1px; margin-bottom:5px;">${brandLogos[b] || b}</div><span style="font-weight:700;">${b}</span>`;
+            btn.type = 'button';
+            btn.onclick = () => { simState.brand = b; document.getElementById('lbl-brand').innerText = b; populateModels(b); simGoTo(2); };
+            bgGrid.appendChild(btn);
+        });
+
+        function populateModels(brand) {
+            const mg = document.getElementById('models-grid'); mg.innerHTML = '';
+            carData[brand].forEach(m => {
+                const btn = document.createElement('button');
+                btn.className = 'sim-btn-model';
+                btn.innerHTML = `<span>${m}</span>`;
+                btn.type = 'button';
+                btn.onclick = () => { simState.model = m; populateFilms(); simGoTo(3); };
+                mg.appendChild(btn);
+            });
+        }
+
+        function populateFilms() {
+            const fl = document.getElementById('films-list'); 
+            fl.className = 'films-carousel';
+            fl.innerHTML = '';
+            filmData.forEach(f => {
+                const card = document.createElement('div');
+                card.className = 'film-card-pro';
+                card.innerHTML = `
+                    <h4>${f.name}</h4>
+                    <p class="desc">${f.desc}</p>
+                    <div class="logo-placeholder">RISADA FILM</div>
+                    <div class="specs">
+                        <span><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>Proteção UV<br>${f.uv}</span>
+                        <span><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>Proteção térmica<br>${f.term}</span>
+                    </div>
+                    <div class="garantia">Garantia de ${f.gar}</div>
+                    <button class="btn-select">Selecionar</button>
+                `;
+                card.onclick = () => { 
+                    simState.filmName = f.name; 
+                    document.getElementById('cfg-film').innerText = f.name;
+                    simGoTo(4); 
+                };
+                fl.appendChild(card);
+            });
+        }
+
+        function setCfgTab(tab) {
+            document.getElementById('tab-para').classList.remove('active');
+            document.getElementById('tab-lat').classList.remove('active');
+            document.getElementById('tones-para').style.display = 'none';
+            document.getElementById('tones-lat').style.display = 'none';
+            
+            document.getElementById('tab-'+tab).classList.add('active');
+            document.getElementById('tones-'+tab).style.display = 'flex';
+        }
+
+        function renderBlog() {
+            const grid = document.getElementById('blog-grid');
+            grid.innerHTML = '';
+            blogPosts.forEach(post => {
+                const b = document.createElement('div');
+                b.style.background = '#111';
+                b.style.borderRadius = '12px';
+                b.style.overflow = 'hidden';
+                b.innerHTML = `
+                    <div style="height:200px; background:url('${post.image}') center/cover;"></div>
+                    <div style="padding:20px;">
+                        <span style="color:var(--accent); font-size:0.8rem; font-weight:700;">${post.category}</span>
+                        <h4 style="margin:10px 0; color:#fff;">${post.title}</h4>
+                        <p style="color:var(--text-dim); font-size:0.9rem; margin-bottom:15px; min-height:60px;">${post.excerpt}</p>
+                        <a href="#" onclick="event.preventDefault(); openPost('${post.id}')" style="color:var(--accent); text-decoration:none; font-size:0.9rem; font-weight:600;">Ler mais &rarr;</a>
+                    </div>
+                `;
+                grid.appendChild(b);
+            });
+        }
+
+        function openPost(id) {
+            const p = blogPosts.find(x => x.id === id);
+            if(!p) return;
+            document.getElementById('m-blog-cat').innerText = p.category;
+            document.getElementById('m-blog-title').innerText = p.title;
+            document.getElementById('m-blog-img').style.backgroundImage = `url('${p.image}')`;
+            document.getElementById('m-blog-content').innerHTML = p.content;
+            document.getElementById('blog-modal').classList.add('active');
+        }
+
+        // Init
+        renderBlog();
+
+        function setTone(type, val, btnElem) {
+            simState[type] = val;
+            const container = document.getElementById('tones-'+type);
+            container.querySelectorAll('.tone-btn').forEach(b => b.classList.remove('selected'));
+            btnElem.classList.add('selected');
+        }
+
+        function simGoTo(step) {
+            document.querySelectorAll('.sim-step').forEach(el => el.classList.remove('active'));
+            document.getElementById('step-'+step).classList.add('active');
+
+            if(step === 5) {
+                const film = filmData.find(f => f.name === simState.filmName);
+                if(film) {
+                    document.getElementById('rev-film-name').innerText = film.name;
+                    document.getElementById('rev-film-desc').innerText = film.desc;
+                    document.getElementById('rev-para').innerText = simState.para;
+                    document.getElementById('rev-lat').innerText = simState.lat;
+                    document.getElementById('rev-uv').innerText = "UV: " + film.uv;
+                    document.getElementById('rev-term').innerText = "Térmica: " + film.term;
+                    document.getElementById('rev-gar').innerText = "Garantia: " + film.gar;
+                }
+            }
+        }
+
+        function simSendWA() {
+            const nome = document.getElementById('sim-nome').value;
+            if(!nome) { alert('Nos diga o seu nome para continuarmos!'); return; }
+
+            // === GERAR PDF ===
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Header
+            doc.setFillColor(3, 3, 3);
+            doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(212, 175, 55); // Ouro
+            doc.setFontSize(22);
+            doc.setFont("helvetica", "bold");
+            doc.text("RISADA FILM", 105, 20, null, null, "center");
+            doc.setFontSize(10);
+            doc.setTextColor(200, 200, 200);
+            doc.text("Orçamento Preliminar de Customização Automotiva Automática", 105, 30, null, null, "center");
+            
+            // Dados do Cliente e Veículo
+            doc.setTextColor(20, 20, 20);
+            doc.setFontSize(14);
+            doc.text("Informações do Pedido", 20, 60);
+            doc.setDrawColor(212, 175, 55);
+            doc.setLineWidth(0.5);
+            doc.line(20, 62, 190, 62);
+            
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "normal");
+            doc.text(`Cliente: ${nome}`, 20, 75);
+            doc.text(`Veículo Reservado: ${simState.brand} ${simState.model}`, 20, 85);
+            doc.text(`Produto / Solução: ${simState.filmName}`, 20, 95);
+            
+            // Configurações
+            doc.setFont("helvetica", "bold");
+            doc.text("Instruções de Tonalidade:", 20, 115);
+            doc.setFont("helvetica", "normal");
+            doc.text(`• Para-Brisa: ${simState.para}`, 20, 125);
+            doc.text(`• Vidros Laterais e Traseiro: ${simState.lat}`, 20, 135);
+            
+            // Preço
+            doc.setFillColor(245, 245, 245);
+            doc.rect(20, 150, 170, 30, 'F');
+            doc.setFont("helvetica", "bold");
+            doc.text("VALOR ESTIMADO DA APLICAÇÃO:", 25, 168);
+            doc.text("A definir via WhatsApp", 120, 168);
+            
+            // Footer
+            doc.setFontSize(9);
+            doc.setTextColor(100, 100, 100);
+            doc.text("Este PDF foi gerado automaticamente através da simulação do site.", 105, 270, null, null, "center");
+            doc.text("A Risada Film entrará em contato em breve para fechar os valores com desconto.", 105, 276, null, null, "center");
+            
+            doc.save(`Orcamento_${nome.replace(/\s+/g, '_')}_RisadaFilm.pdf`);
+            
+            // === ENVIAR WHATSAPP ===
+            const msg = `Fala pessoal da Risada Film, beleza?! 👋 😎\n\nAcabei de fazer uma simulação lá no site e já tô com o meu orçamento preliminar salvo aqui.\nGostaria de ver certinho o valor final com vocês! 👇\n\n🚗 *Meu Veículo:* ${simState.brand} ${simState.model}\n🛡️ *Serviço:* ${simState.filmName}\n\n*Tonalidades Escolhidas:*\n🕶️ *Para-brisa:* ${simState.para}\n⬛ *Laterais e Traseiro:* ${simState.lat}\n\n👤 *Meu Nome:* ${nome}\n\nAguardo o retorno de vocês! 🚀`;
+            
+            // Safari bloqueia pop-ups que acontecem dentro de um setTimeout. O window.open precisa ser síncrono.
+            window.open(`https://api.whatsapp.com/send?phone=5511982787205&text=${encodeURIComponent(msg)}`, '_blank');
+            simGoTo(6);
+        }
+
+    </script>
+</body>
+</html>
