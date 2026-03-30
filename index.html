@@ -10,7 +10,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
     <!-- jsPDF & jsPDF-AutoTable -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
     <style>
         :root {
             --bg: #030303; --surface: rgba(15,15,15,0.7); --elevated: rgba(22,22,22,0.8);
@@ -80,8 +79,11 @@
         .mobile-btn { display: none; background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; }
 
         /* Hero */
-        .hero { height: 100vh; display: flex; align-items: center; position: relative; overflow: hidden; background: linear-gradient(to right, rgba(5,5,5,1) 0%, rgba(5,5,5,0.7) 40%, rgba(5,5,5,0.2) 100%), url('https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?auto=format&fit=crop&q=80&w=1920') center/cover no-repeat; }
-        .hero::after { content: ''; position: absolute; right: 0; top: 0; width: 50%; height: 100%; background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600"><path fill="%231a1a1a" d="M800 0v600H200L800 0z"/></svg>') no-repeat right; background-size: cover; z-index: -1; opacity: 0.1; }
+        .hero { height: 100vh; display: flex; align-items: center; position: relative; overflow: hidden; background: #030303; }
+        .hero-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center center; z-index: 0; opacity: 0.45; }
+        .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to right, rgba(5,5,5,1) 0%, rgba(5,5,5,0.7) 40%, rgba(5,5,5,0.2) 100%); z-index: 1; }
+        .hero .container { position: relative; z-index: 2; }
+        .hero::after { content: ''; position: absolute; right: 0; top: 0; width: 50%; height: 100%; background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600"><path fill="%231a1a1a" d="M800 0v600H200L800 0z"/></svg>') no-repeat right; background-size: cover; z-index: 0; opacity: 0.1; }
         .hero-cont { max-width: 700px; }
         .hero h1 { font-size: 4rem; line-height: 1.1; margin-bottom: 20px; animation: fadeUp 1s ease forwards; text-shadow: 0 0 20px var(--accent-glow); }
         .hero p { font-size: 1.2rem; color: var(--text-dim); margin-bottom: 40px; opacity: 0; animation: fadeUp 1s ease forwards 0.2s; }
@@ -104,8 +106,11 @@
         /* Gallery */
         .gal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
         .gal-item { aspect-ratio: 4/3; background: var(--elevated); border-radius: 8px; overflow: hidden; position: relative; cursor: pointer; }
-        .gal-mock { width: 100%; height: 100%; background-size: cover; background-position: center; transition: transform 0.6s ease; }
+        .gal-mock, .blog-img, .sobre-img { width: 100%; height: 100%; object-fit: cover; object-position: center center; display: block; }
+        .gal-item .gal-mock { background-size: cover; background-position: center center; background-repeat: no-repeat; transition: transform 0.6s ease; }
         .gal-item:hover .gal-mock { transform: scale(1.1); }
+        video { width: 100%; max-height: 80vh; object-fit: contain; border-radius: 12px; background: #000; }
+        video:fullscreen { border-radius: 0; }
         .gal-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.8); display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transition: var(--trans); text-align: center; padding: 20px; }
         .gal-item:hover .gal-overlay { opacity: 1; }
         .gal-overlay h4 { color: var(--accent); font-size: 1.2rem; margin-bottom: 5px; }
@@ -245,6 +250,7 @@
                 <li><a href="#servicos">Serviços</a></li>
                 <li><a href="#diferenciais">Diferenciais</a></li>
                 <li><a href="#galeria">Projetos</a></li>
+                <li><a href="galeria.html">Galeria</a></li>
                 <li><a href="#blog">Blog</a></li>
             </nav>
             <button class="mobile-btn" id="mbtn">☰</button>
@@ -252,6 +258,8 @@
     </header>
 
     <section class="hero">
+        <img src="images/hero-audi.jpg" alt="Audi com Película Premium — Risada Film" class="hero-bg">
+        <div class="hero-overlay"></div>
         <div class="container hero-cont">
             <h1>Proteção.<br>Estilo.<br><span class="text-gold">Performance.</span></h1>
             <p><strong><span style="color: #FF0000;">Aplicador Autorizado 3M</span>.</strong> Especialistas em películas de alta tecnologia automotiva, residencial e comercial, <strong>PPF</strong> (Paint Protection Film), e <strong>Acessórios</strong>. Transforme seu veículo com o exclusivo sistema <strong>TECH-CUT</strong> de corte computadorizado.</p>
@@ -270,21 +278,6 @@
                     <b style="font-family:var(--font-h); font-size:1.4rem; color:#fff;">xlcontrol</b>
                 </div>
             </div>
-        </div>
-    </section>
-
-    <section id="3d-model" style="background: #000; padding: 60px 0; text-align: center;">
-        <div class="container">
-            <h2 class="section-title reveal">Visualize em <span class="text-gold">3D</span></h2>
-            <p class="section-subtitle reveal">Explore nossos modelos e imagine a proteção perfeita para o seu veículo.</p>
-            <model-viewer 
-                src="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/ToyCar/glTF-Binary/ToyCar.glb" 
-                alt="3D Car Model" 
-                auto-rotate 
-                camera-controls 
-                shadow-intensity="1" 
-                style="width: 100%; height: 500px; background: transparent; cursor: grab;">
-            </model-viewer>
         </div>
     </section>
 
@@ -319,15 +312,26 @@
             <p class="section-subtitle reveal">Mais de 10 anos de experiência em películas automotivas e arquitetônicas.</p>
             <div style="display:flex; flex-wrap:wrap; gap:40px; align-items:center;">
                 <div style="flex:1; min-width:300px;">
-                    <img src="images/fachada_loja.png" alt="Sobre a Risada Film" style="width:100%; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+                    <img src="images/fachada-loja.jpg" alt="Fachada da Risada Film - Rua Paramu 612, Vila Bela" style="width:100%; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
                 </div>
                 <div style="flex:1; min-width:300px;">
                     <h3 style="font-size:1.8rem; margin-bottom:20px; font-family:var(--font-b); font-weight:800; text-transform:uppercase;">Nosso compromisso é a sua <span class="text-gold">satisfação</span>.</h3>
-                    <p style="color:var(--text-dim); margin-bottom:15px; font-size:1.05rem;">Na Risada Film, somos apaixonados por transformar automóveis e arquiteturas. Com mais de uma década de experiência, nos tornamos referência na aplicação de películas de alta performance para veículos, residências e comércios na grande São Paulo.</p>
+                    <p style="color:var(--text-dim); margin-bottom:15px; font-size:1.05rem;">Na <span class="brand-text" style="font-size:inherit;">Risada Film</span>, somos apaixonados por transformar automóveis e arquiteturas. Com mais de uma década de experiência, nos tornamos referência na aplicação de películas de alta performance para veículos, residências e comércios na grande São Paulo.</p>
                     <p style="color:var(--text-dim); margin-bottom:20px;">Trabalhamos com as melhores marcas do mercado, como <strong>3M</strong>, <strong>STEK</strong> e <strong>ApexFilm</strong>, garantindo produtos de ponta e durabilidade incomparável. Nossa equipe é altamente qualificada e utiliza o exclusivo sistema de corte computadorizado <strong>TECH-CUT</strong>, assegurando precisão e acabamento impecável em cada projeto.</p>
                     <a href="#orcamento" class="btn btn-gold">Fale Conosco</a>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <!-- Veja na Prática - Vídeo Showcase -->
+    <section id="veja-na-pratica" style="padding: 80px 0; background: #000;">
+        <div class="container" style="text-align:center;">
+            <h2 class="section-title reveal">Veja na <span class="text-gold">Prática</span></h2>
+            <p class="section-subtitle reveal">Confira nosso trabalho em ação: qualidade e precisão em cada aplicação.</p>
+            <video controls style="width:100%; max-width:900px; border-radius:12px; margin-top:30px; box-shadow: 0 15px 40px rgba(0,0,0,0.6);">
+                <source src="videosRisadaFilm/showcase-02.mp4" type="video/mp4">
+            </video>
         </div>
     </section>
 
@@ -367,30 +371,30 @@
         <div class="container">
             <h2 class="section-title reveal">Nosso <span class="text-gold">Portfólio</span></h2>
             <div class="gal-grid">
-                <!-- Items -->
-                <div class="gal-item reveal" onclick="openLightbox('images/sports_car_tint.png', 'Mclaren Black Tint')">
-                    <div class="gal-mock" style="background-image: url('images/sports_car_tint.png')"></div>
-                    <div class="gal-overlay"><h4>Mclaren</h4><p>Película Nano Carbono Black</p></div>
+                <!-- Items com fotos reais do cliente -->
+                <div class="gal-item reveal" onclick="openLightbox('images/portfolio-01.jpg', 'Sistema Tech-Cut Computadorizado')">
+                    <div class="gal-mock" style="background-image: url('images/portfolio-01.jpg')"></div>
+                    <div class="gal-overlay"><h4>Tech-Cut</h4><p>Corte Computadorizado de Alta Precisão</p></div>
                 </div>
-                <div class="gal-item reveal delay-1" onclick="openLightbox('images/house.png', 'Projeto Residencial')">
-                    <div class="gal-mock" style="background-image: url('images/house.png')"></div>
-                    <div class="gal-overlay"><h4>Arquitetura</h4><p>Película de Rejeição de Calor</p></div>
+                <div class="gal-item reveal delay-1" onclick="openLightbox('images/portfolio-06.jpg', 'Película Nano Cerâmica Full UV')">
+                    <div class="gal-mock" style="background-image: url('images/portfolio-06.jpg')"></div>
+                    <div class="gal-overlay"><h4>Nano Cerâmica</h4><p>Full UV — Menos Calor, Mais Visibilidade</p></div>
                 </div>
-                <div class="gal-item reveal delay-2" onclick="openLightbox('images/car_washing_foam.png', 'Lavagem Premium')">
-                    <div class="gal-mock" style="background-image: url('images/car_washing_foam.png')"></div>
-                    <div class="gal-overlay"><h4>Detailing</h4><p>Lavagem Preparatória para PPF</p></div>
+                <div class="gal-item reveal delay-2" onclick="openLightbox('images/portfolio-02.jpg', 'Película Nano Cerâmica')">
+                    <div class="gal-mock" style="background-image: url('images/portfolio-02.jpg')"></div>
+                    <div class="gal-overlay"><h4>Toyota Corolla</h4><p>Película Nano Cerâmica — 90% Proteção IR</p></div>
                 </div>
-                <div class="gal-item reveal" onclick="openLightbox('images/car_ppf_application.png', 'Aplicação de PPF Stek')">
-                    <div class="gal-mock" style="background-image: url('images/car_ppf_application.png')"></div>
-                    <div class="gal-overlay"><h4>Instalação PPF</h4><p>Aplicação em BMW com sistema Tech-Cut</p></div>
+                <div class="gal-item reveal" onclick="openLightbox('images/portfolio-05.jpg', 'Película Nano Carbono')">
+                    <div class="gal-mock" style="background-image: url('images/portfolio-05.jpg')"></div>
+                    <div class="gal-overlay"><h4>Nano Carbono</h4><p>Privacidade e Proteção — 82% IR</p></div>
                 </div>
-                <div class="gal-item reveal delay-1" onclick="openLightbox('images/sunroof_tint.png', 'Proteção de Teto Solar')">
-                    <div class="gal-mock" style="background-image: url('images/sunroof_tint.png')"></div>
-                    <div class="gal-overlay"><h4>Teto Panorâmico</h4><p>Película Confort IR 95% Rejeição</p></div>
+                <div class="gal-item reveal delay-1" onclick="openLightbox('images/portfolio-07.jpg', 'Película PPF — Paint Protection Film')">
+                    <div class="gal-mock" style="background-image: url('images/portfolio-07.jpg')"></div>
+                    <div class="gal-overlay"><h4>PPF Premium</h4><p>Proteção Auto-Regenerativa contra Riscos</p></div>
                 </div>
-                <div class="gal-item reveal delay-2" onclick="openLightbox('images/black_car_window_tint.png', 'Range Rover PPF Frontal')">
-                    <div class="gal-mock" style="background-image: url('images/black_car_window_tint.png')"></div>
-                    <div class="gal-overlay"><h4>Range Rover</h4><p>PPF Auto-regenerativo Frontal</p></div>
+                <div class="gal-item reveal delay-2" onclick="openLightbox('images/portfolio-04.jpg', 'Proteção Antivandalismo')">
+                    <div class="gal-mock" style="background-image: url('images/portfolio-04.jpg')"></div>
+                    <div class="gal-overlay"><h4>Antivandalismo</h4><p>Película Semi Blindada — Segurança Total</p></div>
                 </div>
             </div>
         </div>
@@ -405,54 +409,6 @@
                 <h3 style="color:#555; font-family:var(--font-h); font-size:2rem; margin:0;">TECH-CUT</h3>
                 <h3 style="color:#555; font-family:var(--font-h); font-size:2rem; margin:0;">NexFilm</h3>
                 <h3 style="color:#555; font-family:var(--font-h); font-size:2rem; margin:0;">xlcontrol</h3>
-            </div>
-        </div>
-    </section>
-
-    <!-- Blog Section -->
-    <section id="blog" style="padding: 100px 0; background: #050505;">
-        <div class="container reveal">
-            <h2 class="section-title">Blog & <span class="text-gold">Dicas</span></h2>
-            <p class="section-subtitle">Fique por dentro das novidades e processos de alto impacto</p>
-            <div id="blog-grid" class="foot-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
-                <!-- Javascript will inject Blog Posts here dynamically -->
-            </div>
-        </div>
-    </section>
-
-    <!-- Blog Read Modal -->
-    <div id="blog-modal" class="blog-modal">
-        <div class="blog-modal-content">
-            <a class="blog-modal-close" onclick="document.getElementById('blog-modal').classList.remove('active')">&times;</a>
-            <div id="m-blog-img" class="blog-hero-img"></div>
-            <span id="m-blog-cat" style="color:var(--accent); font-size:0.9rem; font-weight:700; text-transform:uppercase;"></span>
-            <h2 id="m-blog-title" style="font-size: 2.2rem; margin: 10px 0 20px; color: #fff;"></h2>
-            <div id="m-blog-content" class="blog-content"></div>
-        </div>
-    </div>
-
-
-    <section id="avaliacoes" style="background: var(--elevated);">
-        <div class="container">
-            <h2 class="section-title reveal">O que dizem os <span class="text-gold">Clientes</span></h2>
-            <div class="rating-box reveal">
-                <div class="score">4.7</div>
-                <div class="stars">★★★★★</div>
-                <div style="color:var(--text-dim); font-size: 0.9rem;">58 avaliações no Google</div>
-            </div>
-            <div class="rev-grid">
-                <div class="rev-card reveal">
-                    <div class="rev-head"><div class="avatar">M</div><div><h4 style="color:#fff;">Marcelo Almeida</h4><div style="color:var(--accent);">★★★★★</div></div></div>
-                    <p>"Serviço impecável! Coloquei película e a diferença de calor é absurda. Atendimento top."</p>
-                </div>
-                <div class="rev-card reveal" style="transition-delay: 0.1s;">
-                    <div class="rev-head"><div class="avatar">L</div><div><h4 style="color:#fff;">Luciana Tavares</h4><div style="color:var(--accent);">★★★★★</div></div></div>
-                    <p>"Envelopamento ficou perfeito, sem bolhas. Extremamente detalhistas e rápidos."</p>
-                </div>
-                <div class="rev-card reveal" style="transition-delay: 0.2s;">
-                    <div class="rev-head"><div class="avatar">R</div><div><h4 style="color:#fff;">Ricardo C.</h4><div style="color:var(--accent);">★★★★★</div></div></div>
-                    <p>"Instalaram na minha varanda. Acabou o reflexo na TV e o ambiente ficou ótimo. Recomendo."</p>
-                </div>
             </div>
         </div>
     </section>
@@ -556,12 +512,64 @@
         </div>
     </section>
 
+    <section id="avaliacoes" style="background: var(--elevated);">
+        <div class="container">
+            <h2 class="section-title reveal">O que dizem os <span class="text-gold">Clientes</span></h2>
+            <div class="rating-box reveal">
+                <div class="score">4.7</div>
+                <div class="stars">★★★★★</div>
+                <div style="color:var(--text-dim); font-size: 0.9rem;">58 avaliações no Google</div>
+            </div>
+            <div class="rev-grid">
+                <div class="rev-card reveal">
+                    <div class="rev-head"><div class="avatar">M</div><div><h4 style="color:#fff;">Marcelo Almeida</h4><div style="color:var(--accent);">★★★★★</div></div></div>
+                    <p>"Serviço impecável! Coloquei película e a diferença de calor é absurda. Atendimento top."</p>
+                </div>
+                <div class="rev-card reveal" style="transition-delay: 0.1s;">
+                    <div class="rev-head"><div class="avatar">L</div><div><h4 style="color:#fff;">Luciana Tavares</h4><div style="color:var(--accent);">★★★★★</div></div></div>
+                    <p>"Envelopamento ficou perfeito, sem bolhas. Extremamente detalhistas e rápidos."</p>
+                </div>
+                <div class="rev-card reveal" style="transition-delay: 0.2s;">
+                    <div class="rev-head"><div class="avatar">R</div><div><h4 style="color:#fff;">Ricardo C.</h4><div style="color:var(--accent);">★★★★★</div></div></div>
+                    <p>"Instalaram na minha varanda. Acabou o reflexo na TV e o ambiente ficou ótimo. Recomendo."</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog Section -->
+    <section id="blog" style="padding: 100px 0; background: #050505;">
+        <div class="container reveal">
+            <h2 class="section-title">Blog & <span class="text-gold">Dicas</span></h2>
+            <p class="section-subtitle">Fique por dentro das novidades e processos de alto impacto</p>
+            <div id="blog-grid" class="foot-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+                <!-- Javascript will inject Blog Posts here dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog Read Modal -->
+    <div id="blog-modal" class="blog-modal">
+        <div class="blog-modal-content">
+            <a class="blog-modal-close" onclick="document.getElementById('blog-modal').classList.remove('active')">&times;</a>
+            <div id="m-blog-img" class="blog-hero-img"></div>
+            <span id="m-blog-cat" style="color:var(--accent); font-size:0.9rem; font-weight:700; text-transform:uppercase;"></span>
+            <h2 id="m-blog-title" style="font-size: 2.2rem; margin: 10px 0 20px; color: #fff;"></h2>
+            <div id="m-blog-content" class="blog-content"></div>
+        </div>
+    </div>
+
+
+
+
+
+
     <footer>
         <div class="container">
             <div class="foot-grid">
                 <div class="foot-col">
                     <img src="images/logo.png" alt="Risada Film Logo" style="height: 60px; margin-bottom: 20px;">
-                    <h4>Risada Film</h4>
+                    <h4><span class="brand-text" style="font-size: 1.5rem;">Risada Film</span></h4>
                     <p style="color:var(--text-dim);">Autoridade e exclusividade em estética e proteção automotiva na grande São Paulo.</p>
                 </div>
                 <div class="foot-col">
@@ -571,6 +579,7 @@
                         <li><a href="#servicos">Serviços</a></li>
                         <li><a href="#diferenciais">Diferenciais</a></li>
                         <li><a href="#galeria">Projetos</a></li>
+                        <li><a href="galeria.html">Galeria</a></li>
                         <li><a href="#blog">Blog</a></li>
                     </ul>
                 </div>
@@ -598,11 +607,18 @@
                 </div>
             </div>
             <div class="foot-bot" style="line-height: 1.8;">
-                © <script>document.write(new Date().getFullYear())</script> Risada Film. Todos os direitos reservados. Feito para alta conversão.<br>
+                © <script>document.write(new Date().getFullYear())</script> <span class="brand-text" style="font-size: 0.85rem;">Risada Film</span>. Todos os direitos reservados. Feito para alta conversão.<br>
                 <span style="color: var(--text-dim); font-size: 0.75rem;">Risada Comercio de Pelicula Solar Ltda - CNPJ: 33.574.274/0001-43</span>
             </div>
         </div>
     </footer>
+
+    <!-- Lightbox Modal -->
+    <div id="lightbox-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:10001; justify-content:center; align-items:center; cursor:pointer;" onclick="this.style.display='none'">
+        <span style="position:absolute; top:20px; right:30px; font-size:2.5rem; color:#fff; cursor:pointer;">&times;</span>
+        <img id="lightbox-img" style="max-width:90%; max-height:85vh; border-radius:12px; box-shadow:0 20px 60px rgba(0,0,0,0.8);">
+        <p id="lightbox-title" style="position:absolute; bottom:30px; color:#fff; font-size:1.2rem; text-align:center; width:100%; font-weight:600; text-shadow:0 2px 10px rgba(0,0,0,0.8);"></p>
+    </div>
 
     <a href="https://wa.me/5511982787205" target="_blank" class="float-wpp">
         <svg viewBox="0 0 24 24" width="34" height="34" fill="currentColor"><path d="M12.031 0C5.385 0 0 5.385 0 12.031c0 2.128.548 4.195 1.587 6.007L.03 23.959l6.068-1.558a12.029 12.029 0 0 0 5.933 1.564v-.001c6.643 0 12.028-5.384 12.028-12.031S18.673 0 12.031 0zM12.031 21.652c-1.84 0-3.642-.495-5.215-1.428l-.374-.22-3.877.994 1.01-3.774-.242-.387a9.998 9.998 0 0 1-1.53-5.328c0-5.525 4.496-10.02 10.023-10.02 2.677 0 5.196 1.042 7.087 2.934 1.89 1.892 2.933 4.409 2.933 7.086 0 5.524-4.496 10.02-10.02 10.02zm5.498-7.509c-.302-.15-1.785-.88-2.062-.982-.276-.1-.478-.15-.678.15-.202.302-.782.982-.958 1.182-.176.2-.352.226-.654.076-1.164-.582-2.185-1.127-3.023-2.585-.213-.37-.02-.572.13-.72.136-.134.303-.353.454-.53.15-.175.202-.301.302-.501.101-.2.05-.376-.026-.526-.075-.15-.678-1.636-.928-2.242-.243-.588-.49-.508-.678-.517h-.58c-.201 0-.528.075-.805.375-.276.302-1.056 1.032-1.056 2.515s1.08 2.915 1.231 3.115c.15.2 2.122 3.235 5.14 4.537.718.309 1.278.494 1.716.632.721.228 1.378.196 1.894.12.576-.086 1.785-.73 2.037-1.434.25-.705.25-1.306.176-1.434-.075-.125-.276-.2-.578-.35z"/></svg> 
@@ -614,6 +630,14 @@
     </a>
 
     <script>
+        // Lightbox
+        function openLightbox(src, title) {
+            const modal = document.getElementById('lightbox-modal');
+            document.getElementById('lightbox-img').src = src;
+            document.getElementById('lightbox-title').innerText = title;
+            modal.style.display = 'flex';
+        }
+
         // Header scroll effect
         window.addEventListener('scroll', () => {
             const header = document.getElementById('header');
@@ -693,7 +717,7 @@
                 excerpt: 'Descubra qual película premium é a mais indicada para as suas necessidades de proteção térmica e visual.',
                 image: 'images/suv_matte.png',
                 content: `
-                    <p>Muitos clientes chegam até a Risada Film com a seguinte dúvida: <b>"Qual película devo colocar, Nano Cerâmica ou Nano Carbono?"</b> Existem muitos mitos na internet, mas a resposta exata depende de qual é a sua principal necessidade.</p>
+                    <p>Muitos clientes chegam até a <span class="brand-text" style="font-size:inherit;">Risada Film</span> com a seguinte dúvida: <b>"Qual película devo colocar, Nano Cerâmica ou Nano Carbono?"</b> Existem muitos mitos na internet, mas a resposta exata depende de qual é a sua principal necessidade.</p>
                     <h3>1. Tecnologia Nano Cerâmica</h3>
                     <p>A película Nano Cerâmica, como a Confort IR que oferecemos, é a campeã indiscutível de <b>rejeição de calor (Proteção Térmica)</b> e da visibilidade. Sendo composta por nano-partículas cerâmicas que não escurecem absurdamente a janela, ela consegue bloquear até 90% do calor sem impedir a visão do motorista (visibilidade cristalina de dentro para fora).</p>
                     <h3>2. Tecnologia Nano Carbono</h3>
@@ -711,7 +735,7 @@
                     <p>Se você comprou um carro zero, as ruas brasileiras oferecem um perigo constante. Pequenas pedras nas estradas, arranhões em estacionamentos, e lavadeiras que criam hologramas.</p>
                     <h3>A Blindagem Transparente: PPF</h3>
                     <p>O <b>Paint Protection Film (PPF)</b> é uma película de poliuretano altamente flexível, invisível e extremamente grossa. Diferente de um selamento cerâmico (que não impede o impacto de uma pedra forte), o PPF age como um "plástico absorvente" na sua lataria.</p>
-                    <p>O melhor de tudo? As películas PPF modernas que usamos aqui na <b>Risada Film</b> possuem tecnologia auto-regenerativa. Isso significa que se alguém riscar o PPF do seu carro com uma chave, basta colocar um soprador quente ou deixar no sol que o material "derrete" e volta ao estado liso original.</p>
+                    <p>O melhor de tudo? As películas PPF modernas que usamos aqui na <span class="brand-text" style="font-size:inherit;">Risada Film</span> possuem tecnologia auto-regenerativa. Isso significa que se alguém riscar o PPF do seu carro com uma chave, basta colocar um soprador quente ou deixar no sol que o material "derrete" e volta ao estado liso original.</p>
                     <p>Proteja seu investimento antes que o primeiro arranhão ocorra. Um carro com pintura de fábrica intacta perde muito menos valor de revenda, muitas vezes pagando imediatamente o valor aplicado no PPF.</p>
                 `
             },
@@ -725,7 +749,7 @@
                     <p>Trabalhar em um ambiente em que o sol reflete diretamente na tela do seu computador pode acabar com a sua produtividade diária (ou tornar impossível deparar-se com a sua TV da sala).</p>
                     <h3>A Revolução do Película Arquitetônica</h3>
                     <p>As <b>películas arquitetônicas</b> têm um propósito duplo: economia real de energia e conforto estético. Quando o sol bate em uma janela sem película térmica avançada, seu ar-condicionado precisa gastar mais de 40% de energia extra para conseguir quebrar a inércia térmica.</p>
-                    <p>Aplicando o material moderno pelas mãos da Risada Film minimiza-se a refração de luz e rejeita-se até 85% dos raios infravermelhos (responsáveis pelo "bafo quente" próximo à janela).</p>
+                    <p>Aplicando o material moderno pelas mãos da <span class="brand-text" style="font-size:inherit;">Risada Film</span> minimiza-se a refração de luz e rejeita-se até 85% dos raios infravermelhos (responsáveis pelo "bafo quente" próximo à janela).</p>
                     <p>Entre em contato hoje para avaliarmos suas sacadas e vitrines corporativas. Você e o seu bolso notarão a diferença no primeiro mês.</p>
                 `
             },
@@ -747,7 +771,7 @@
                     <h3 style="color:#d4a017;">3. Segurança Contra Estilhaços</h3>
                     <p>Se uma pedra ou granizo forte atingir seu teto panorâmico rachando o vidro exposto, a película evita que a chuva de cacos soltos caia no banco de trás, resguardando os passageiros infantis.</p>
                     
-                    <p><br>Passe na <b>Risada Film</b> e faça o teto solar do seu carro ser tão tecnológico quanto o resto dele.</p>
+                    <p><br>Passe na <span class="brand-text" style="font-size:inherit;">Risada Film</span> e faça o teto solar do seu carro ser tão tecnológico quanto o resto dele.</p>
                 `
             },
             {
@@ -765,7 +789,7 @@
                     <h3 style="color:#d4a017;">Cuidado com Lava Jatadoras de Pressão</h3>
                     <p>O lavador de pressão direcional forte (A "WAP") não deve ser apontado à menos de 40cm das beiradas e quinas da lataria (local das frestas), pois pode ocasionar um levantamento desnecessário das bordas da película através da pressão hídrica forçada.</p>
                     
-                    <p><br>As películas originais de PPF aplicadas na <b>Risada Film</b> possuem alto nível hidrofóbico, sendo super fácies de lavar na mão. Mantenha os simples cuidados acima e tenha o visual inalterável!</p>
+                    <p><br>As películas originais de PPF aplicadas na <span class="brand-text" style="font-size:inherit;">Risada Film</span> possuem alto nível hidrofóbico, sendo super fácies de lavar na mão. Mantenha os simples cuidados acima e tenha o visual inalterável!</p>
                 `
             }
         ];

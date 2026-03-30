@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galeria Completa | Risada Film — Películas Premium SP</title>
+    <meta name="description" content="Confira nossa galeria completa de trabalhos: películas automotivas, residenciais, PPF, envelopamento e muito mais. Risada Film — Aplicador Autorizado 3M em São Paulo.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #030303; --surface: rgba(15,15,15,0.7); --elevated: rgba(22,22,22,0.8);
+            --accent: #d4af37; --accent-glow: rgba(212, 175, 55, 0.4);
+            --danger: #e63946;
+            --text: #f0f0f0; --text-dim: #999;
+            --brand-yellow: #ffff00;
+            --font-h: 'Orbitron', sans-serif; --font-p: 'Outfit', sans-serif;
+            --trans: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
+        body { font-family: var(--font-p); background: var(--bg); color: var(--text); overflow-x: hidden; line-height: 1.6; }
+
+        .brand-text { font-family: 'Georgia', serif; font-style: italic; font-weight: 900; color: var(--brand-yellow); text-shadow: 0 0 5px rgba(255,255,0,0.2); }
+
+        /* Premium Background */
+        .carbon-bg {
+            position: fixed; inset: 0; z-index: -2; opacity: 0.25;
+            background: linear-gradient(27deg, #151515 5px, transparent 5px) 0 5px,
+                        linear-gradient(207deg, #151515 5px, transparent 5px) 10px 0px,
+                        linear-gradient(27deg, #222 5px, transparent 5px) 0px 10px,
+                        linear-gradient(207deg, #222 5px, transparent 5px) 10px 5px,
+                        linear-gradient(90deg, #1b1b1b 10px, transparent 10px),
+                        linear-gradient(#1d1d1d 25%, #1a1a1a 25%, #1a1a1a 50%, transparent 50%, transparent 75%, #242424 75%, #242424 100%);
+            background-color: #131313; background-size: 20px 20px;
+        }
+        .glow-blob { position: fixed; width: 60vw; height: 60vw; background: radial-gradient(circle, var(--accent-glow) 0%, transparent 60%); border-radius: 50%; filter: blur(100px); opacity: 0.12; z-index: -1; pointer-events: none; }
+        .glow-blob.one { top: -20%; left: -20%; }
+        .glow-blob.two { bottom: -20%; right: -20%; }
+
+        h1, h2, h3 { font-family: var(--font-h); text-transform: uppercase; font-weight: 800; letter-spacing: 2px; }
+        a { text-decoration: none; color: inherit; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        section { padding: 100px 0; }
+
+        .section-title { font-size: 2.8rem; text-align: center; margin-bottom: 1rem; background: linear-gradient(to right, #fff 0%, #aaa 100%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 20px rgba(255,255,255,0.1); }
+        .section-subtitle { text-align: center; color: var(--text-dim); max-width: 600px; margin: 0 auto 3rem auto; font-size: 1.1rem; }
+        .text-gold { background: linear-gradient(135deg, #fff2a8 0%, #d4af37 50%, #aa8c2c 100%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 30px var(--accent-glow); }
+
+        .btn { display: inline-block; padding: 15px 30px; border-radius: 30px; font-weight: 700; text-decoration: none; text-transform: uppercase; transition: var(--trans); cursor: pointer; border: none; font-size: 0.9rem; letter-spacing: 1px; }
+        .btn:hover { transform: translateY(-5px) scale(1.03); box-shadow: 0 15px 30px rgba(0,0,0,0.4); }
+        .btn-gold { background: linear-gradient(135deg, #f5c518, #d4a017); color: #000; box-shadow: 0 5px 15px rgba(245,197,24, 0.2); }
+        .btn-gold:hover { background: linear-gradient(135deg, #f8d347, #e8b320); box-shadow: 0 10px 25px rgba(245,197,24, 0.5); }
+        .btn-outline { background: transparent; color: #fff; border: 2px solid rgba(255,255,255,0.2); }
+        .btn-outline:hover { background: #fff; color: #000; box-shadow: 0 10px 25px rgba(255,255,255,0.3); transform: translateY(-5px) scale(1.03); }
+
+        .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s ease; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        .delay-1 { transition-delay: 0.1s; }
+        .delay-2 { transition-delay: 0.2s; }
+
+        /* Header */
+        header { position: fixed; top: 0; width: 100%; background: rgba(5,5,5,0.8); backdrop-filter: blur(10px); z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.05); transition: var(--trans); padding: 15px 0; }
+        header.scrolled { padding: 10px 0; background: rgba(5,5,5,0.95); box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
+        .nav-wrap { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: 'Georgia', Times, serif; font-style: italic; font-size: 1.8rem; font-weight: 900; letter-spacing: -0.5px; display: flex; align-items: center; gap: 10px; }
+        .nav-links { display: flex; gap: 30px; list-style: none; }
+        .nav-links a { color: #fff; text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: var(--trans); text-transform: uppercase; letter-spacing: 1px; }
+        .nav-links a:hover { color: var(--accent); text-shadow: 0 0 10px rgba(245,197,24,0.5); }
+        .mobile-btn { display: none; background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; }
+
+        /* Gallery Hero Banner */
+        .gallery-hero {
+            padding: 160px 0 80px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .gallery-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('images/fachada-loja.jpg') center/cover no-repeat;
+            opacity: 0.12;
+            z-index: 0;
+            transform: scale(1.05);
+            filter: blur(2px);
+        }
+        .gallery-hero::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(3,3,3,0.7) 0%, rgba(3,3,3,1) 100%);
+            z-index: 1;
+        }
+        .gallery-hero .container { position: relative; z-index: 2; }
+
+        /* Stats Counter */
+        .stats-bar {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+        .stat-item {
+            text-align: center;
+            padding: 15px 25px;
+            background: rgba(212,175,55,0.05);
+            border: 1px solid rgba(212,175,55,0.15);
+            border-radius: 12px;
+            min-width: 140px;
+            transition: var(--trans);
+        }
+        .stat-item:hover {
+            border-color: rgba(212,175,55,0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        .stat-number {
+            font-family: var(--font-h);
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+            display: block;
+        }
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Filter Tabs */
+        .filter-bar {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 10px 24px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: var(--surface);
+            color: var(--text-dim);
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: var(--font-p);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: var(--trans);
+        }
+        .filter-btn:hover {
+            border-color: rgba(212,175,55,0.4);
+            color: var(--accent);
+            background: rgba(212,175,55,0.05);
+        }
+        .filter-btn.active {
+            background: linear-gradient(135deg, #f5c518, #d4a017);
+            color: #000;
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(245,197,24,0.3);
+        }
+
+        /* Enhanced Gallery Grid */
+        .gal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
+        .gal-item {
+            aspect-ratio: 4/3;
+            background: var(--elevated);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.04);
+            transition: var(--trans);
+        }
+        .gal-item:hover {
+            border-color: rgba(212,175,55,0.3);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+            transform: translateY(-5px);
+        }
+        .gal-item[data-hidden="true"] { display: none; }
+        .gal-mock, .blog-img, .sobre-img { width: 100%; height: 100%; object-fit: cover; object-position: center center; display: block; }
+        .gal-item .gal-mock { background-size: cover; background-position: center center; background-repeat: no-repeat; transition: transform 0.8s cubic-bezier(0.25, 0.1, 0.25, 1); }
+        .gal-item:hover .gal-mock { transform: scale(1.08); }
+        .gal-overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.9) 100%);
+            display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end;
+            opacity: 0; transition: opacity 0.4s ease; text-align: left; padding: 25px;
+        }
+        .gal-item:hover .gal-overlay { opacity: 1; }
+        .gal-overlay h4 { color: var(--accent); font-size: 1.1rem; margin-bottom: 4px; font-family: var(--font-h); }
+        .gal-overlay p { color: var(--text-dim); font-size: 0.9rem; }
+        .gal-overlay .tag {
+            display: inline-block;
+            font-size: 0.65rem;
+            background: rgba(212,175,55,0.15);
+            color: var(--accent);
+            padding: 3px 10px;
+            border-radius: 20px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        /* Videos Grid */
+        .videos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 30px; }
+        .video-card {
+            border-radius: 12px;
+            overflow: hidden;
+            background: var(--elevated);
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: var(--trans);
+        }
+        .video-card:hover {
+            border-color: rgba(212,175,55,0.3);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transform: translateY(-5px);
+        }
+        .video-card video { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; background: #000; }
+        .video-card video:-webkit-full-screen { object-fit: contain; aspect-ratio: auto; }
+        .video-card video:fullscreen { object-fit: contain; aspect-ratio: auto; }
+
+        /* Footer */
+        footer { background: #000; padding: 60px 0 20px; border-top: 1px solid rgba(255,255,255,0.05); }
+        .foot-grid { display: grid; grid-template-columns: 2fr 1fr 1.5fr 1.5fr; gap: 40px; margin-bottom: 40px; }
+        .foot-col h4 { font-family: var(--font-h); font-size: 1.5rem; margin-bottom: 20px; }
+        .foot-col h5 { font-family: var(--font-h); font-size: 1.1rem; margin-bottom: 20px; color: #fff; border-bottom: 2px solid var(--accent); padding-bottom: 10px; display: inline-block; }
+        .foot-col ul { list-style: none; }
+        .foot-col ul li { margin-bottom: 10px; color: var(--text-dim); line-height: 1.6; }
+        .foot-col ul a { color: var(--text-dim); text-decoration: none; transition: var(--trans); }
+        .foot-col ul a:hover { color: var(--accent); padding-left: 5px; }
+        .foot-bot { text-align: center; color: #555; font-size: 0.85rem; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); }
+
+        /* Floating WhatsApp */
+        .float-wpp { position: fixed; bottom: 30px; right: 30px; background: #25D366; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(37,211,102,0.4); z-index: 1000; transition: var(--trans); }
+        .float-wpp:hover { transform: scale(1.15) rotate(-10deg); box-shadow: 0 10px 25px rgba(37,211,102,0.7); background: #20b858; }
+
+        .social-icon { display: flex; align-items: center; justify-content: center; width: 45px; height: 45px; background: rgba(255,255,255,0.05); border-radius: 50%; color: #fff; transition: var(--trans); text-decoration: none; border: 1px solid rgba(255,255,255,0.1); }
+        .social-icon:hover { background: var(--accent); color: #000; transform: translateY(-8px) scale(1.1); box-shadow: 0 15px 25px rgba(245,197,24,0.4); border-color: var(--accent); }
+
+        .back-link {
+            display: inline-flex; align-items: center; gap: 8px;
+            color: var(--accent); font-weight: 600; margin-bottom: 20px;
+            transition: var(--trans); text-transform: uppercase; letter-spacing: 1px; font-size: 0.85rem;
+        }
+        .back-link:hover { color: #fff; transform: translateX(-5px); }
+
+        /* Lightbox */
+        .lightbox-modal {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.97);
+            z-index: 10001;
+            justify-content: center; align-items: center;
+            cursor: pointer;
+            animation: lbFadeIn 0.3s ease;
+        }
+        .lightbox-modal.show { display: flex; }
+        @keyframes lbFadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .lightbox-close {
+            position: absolute; top: 20px; right: 30px;
+            font-size: 2.5rem; color: #fff; cursor: pointer;
+            width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; background: rgba(255,255,255,0.1);
+            transition: var(--trans); border: none;
+        }
+        .lightbox-close:hover { background: rgba(255,255,255,0.2); transform: rotate(90deg); }
+        .lightbox-img {
+            max-width: 90%; max-height: 85vh;
+            border-radius: 12px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.9);
+            animation: lbZoom 0.3s ease;
+        }
+        @keyframes lbZoom { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .lightbox-title {
+            position: absolute; bottom: 30px;
+            color: #fff; font-size: 1.2rem; text-align: center; width: 100%;
+            font-weight: 600; text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .gallery-hero h1 { font-size: 2.5rem; }
+            .foot-grid { grid-template-columns: 1fr; }
+            .nav-links { display: none; position: absolute; top: 100%; left: 0; width: 100%; background: rgba(10,10,10,0.98); backdrop-filter: blur(15px); flex-direction: column; padding: 20px; gap: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+            .nav-links.active { display: flex; }
+            .mobile-btn { display: block; }
+            .videos-grid { grid-template-columns: 1fr; }
+            .gal-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+            .stats-bar { gap: 15px; }
+            .stat-item { min-width: 100px; padding: 12px 15px; }
+            .stat-number { font-size: 1.5rem; }
+            .section-title { font-size: 2rem; }
+            .filter-btn { padding: 8px 16px; font-size: 0.75rem; }
+        }
+        @media (max-width: 480px) {
+            .gal-grid { grid-template-columns: 1fr; }
+            .videos-grid { grid-template-columns: 1fr; }
+            .gallery-hero h1 { font-size: 1.8rem; }
+            .filter-bar { gap: 8px; }
+        }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+    <div class="carbon-bg"></div>
+    <div class="glow-blob one"></div>
+    <div class="glow-blob two"></div>
+
+    <header id="header">
+        <div class="container nav-wrap">
+            <a href="index.html" class="logo">
+                <img src="images/logo.png" alt="Risada Film" style="height: 60px; filter: drop-shadow(0 0 10px rgba(255,255,0,0.3));">
+            </a>
+            <nav class="nav-links" id="nav-links">
+                <li><a href="index.html#sobre">Sobre Nós</a></li>
+                <li><a href="index.html#servicos">Serviços</a></li>
+                <li><a href="index.html#diferenciais">Diferenciais</a></li>
+                <li><a href="index.html#galeria">Projetos</a></li>
+                <li><a href="galeria.html" style="color: var(--accent);">Galeria</a></li>
+                <li><a href="index.html#blog">Blog</a></li>
+            </nav>
+            <button class="mobile-btn" id="mbtn">☰</button>
+        </div>
+    </header>
+
+    <!-- Hero Banner -->
+    <section class="gallery-hero">
+        <div class="container">
+            <a href="index.html" class="back-link">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Voltar ao Site
+            </a>
+            <h1 style="font-size: 3.5rem; margin-bottom: 15px; animation: fadeUp 1s ease forwards;">
+                Galeria <span class="text-gold">Completa</span>
+            </h1>
+            <p class="section-subtitle" style="animation: fadeUp 1s ease forwards 0.2s; margin-bottom: 0;">
+                Confira todos os nossos trabalhos: películas automotivas, residenciais, comerciais, PPF e muito mais.
+            </p>
+
+            <!-- Stats -->
+            <div class="stats-bar" style="animation: fadeUp 1s ease forwards 0.4s;">
+                <div class="stat-item">
+                    <span class="stat-number">10+</span>
+                    <span class="stat-label">Anos de Experiência</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">3M</span>
+                    <span class="stat-label">Autorizado Oficial</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">1000+</span>
+                    <span class="stat-label">Veículos Atendidos</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">99%</span>
+                    <span class="stat-label">Bloqueio UV</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Galeria de Fotos -->
+    <section id="galeria-completa" style="padding: 80px 0;">
+        <div class="container">
+            <h2 class="section-title reveal">Nossos <span class="text-gold">Trabalhos</span></h2>
+            <p class="section-subtitle reveal">Cada projeto é executado com o máximo de cuidado e tecnologia de ponta.</p>
+
+            <!-- Filter Tabs -->
+            <div class="filter-bar reveal">
+                <button class="filter-btn active" data-filter="todos" onclick="filterGallery('todos')">Todos</button>
+                <button class="filter-btn" data-filter="automotivo" onclick="filterGallery('automotivo')">Automotivo</button>
+                <button class="filter-btn" data-filter="ppf" onclick="filterGallery('ppf')">PPF</button>
+                <button class="filter-btn" data-filter="residencial" onclick="filterGallery('residencial')">Residencial</button>
+                <button class="filter-btn" data-filter="loja" onclick="filterGallery('loja')">Nossa Loja</button>
+            </div>
+
+            <div class="gal-grid" id="galeria-grid">
+                <div class="gal-item reveal" data-category="automotivo" onclick="openLightbox('images/portfolio-01.jpg', 'Sistema Tech-Cut — Corte Computadorizado')">
+                    <div class="gal-mock" style="background-image:url('images/portfolio-01.jpg')"></div>
+                    <div class="gal-overlay">
+                        <span class="tag">Automotivo</span>
+                        <h4>Tech-Cut</h4>
+                        <p>Corte Computadorizado de Alta Precisão</p>
+                    </div>
+                </div>
+                <div class="gal-item reveal delay-1" data-category="automotivo" onclick="openLightbox('images/portfolio-02.jpg', 'Toyota Corolla — Película Nano Cerâmica')">
+                    <div class="gal-mock" style="background-image:url('images/portfolio-02.jpg')"></div>
+                    <div class="gal-overlay">
+                        <span class="tag">Automotivo</span>
+                        <h4>Toyota Corolla</h4>
+                        <p>Película Nano Cerâmica — 90% Proteção IR</p>
+                    </div>
+                </div>
+                <div class="gal-item reveal delay-2" data-category="loja" onclick="openLightbox('images/portfolio-03.jpg', 'Horário de Funcionamento — Risada Film')">
+                    <div class="gal-mock" style="background-image:url('images/portfolio-03.jpg')"></div>
+                    <div class="gal-overlay">
+                        <span class="tag">Nossa Loja</span>
+                        <h4>Atendimento</h4>
+                        <p>Horário de Funcionamento — Vila Bela, SP</p>
+                    </div>
+                </div>
+                <div class="gal-item reveal" data-category="automotivo" onclick="openLightbox('images/portfolio-04.jpg', 'Proteção Antivandalismo — Jeep')">
+                    <div class="gal-mock" style="background-image:url('images/portfolio-04.jpg')"></div>
+                    <div class="gal-overlay">
+                        <span class="tag">Automotivo</span>
+                        <h4>Antivandalismo</h4>
+                        <p>Película Semi Blindada — Segurança Total</p>
+                    </div>
+                </div>
+                <div class="gal-item reveal delay-1" data-category="automotivo" onclick="openLightbox('images/portfolio-05.jpg', 'Película Nano Carbono')">
+                    <div class="gal-mock" style="background-image:url('images/portfolio-05.jpg')"></div>
+                    <div class="gal-overlay">
+                        <span class="tag">Automotivo</span>
+                        <h4>Nano Carbono</h4>
+                        <p>Privacidade e Proteção — 82% IR</p>
+                    </div>
+                </div>
+                <div class="gal-item reveal delay-2" data-category="automotivo" onclick="openLightbox('images/portfolio-06.jpg', 'Nano Cerâmica Full UV')">
+                    <div class="gal-mock" style="background-image:url('images/portfolio-06.jpg')"></div>
+                    <div class="gal-overlay">
+                        <span class="tag">Automotivo</span>
+                        <h4>Nano Cerâmica</h4>
+                        <p>Full UV — Menos Calor, Mais Visibilidade</p>
+                    </div>
+                </div>
+                <div class="gal-item reveal" data-category="ppf" onclick="openLightbox('images/portfolio-07.jpg', 'Película PPF — Paint Protection Film')">
+                    <div class="gal-mock" style="background-image:url('images/portfolio-07.jpg')"></div>
+                    <div class="gal-overlay">
+                        <span class="tag">PPF</span>
+                        <h4>PPF Premium</h4>
+                        <p>Proteção Auto-Regenerativa contra Riscos</p>
+                    </div>
+                </div>
+                <div class="gal-item reveal delay-1" data-category="automotivo" onclick="openLightbox('images/portfolio-08.jpg', 'Sistema Tech-Cut — Software de Corte')">
+                    <div class="gal-mock" style="background-image:url('images/portfolio-08.jpg')"></div>
+                    <div class="gal-overlay">
+                        <span class="tag">Automotivo</span>
+                        <h4>Tech-Cut Software</h4>
+                        <p>Corte Computadorizado Avançado</p>
+                    </div>
+                </div>
+                <div class="gal-item reveal delay-2" data-category="residencial" onclick="openLightbox('images/portfolio-09.jpg', 'Película Residencial — Nano Ceramic')">
+                    <div class="gal-mock" style="background-image:url('images/portfolio-09.jpg')"></div>
+                    <div class="gal-overlay">
+                        <span class="tag">Residencial</span>
+                        <h4>Residencial</h4>
+                        <p>Nano Ceramic — Conforto Térmico sem Alterar Aparência</p>
+                    </div>
+                </div>
+                <div class="gal-item reveal" data-category="loja" onclick="openLightbox('images/fachada-loja.jpg', 'Fachada — Risada Film')">
+                    <div class="gal-mock" style="background-image:url('images/fachada-loja.jpg')"></div>
+                    <div class="gal-overlay">
+                        <span class="tag">Nossa Loja</span>
+                        <h4>Nossa Fachada</h4>
+                        <p>Rua Paramu, 612 — Vila Bela, SP</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Seção de Vídeos -->
+    <section id="videos" style="padding: 80px 0; background: #080808;">
+        <div class="container">
+            <h2 class="section-title reveal">Vídeos do <span class="text-gold">Nosso Trabalho</span></h2>
+            <p class="section-subtitle reveal">Assista processos reais de aplicação e conheça nosso padrão de excelência.</p>
+            <div class="videos-grid">
+                <div class="video-card reveal">
+                    <video controls preload="none" poster="images/portfolio-01.jpg">
+                        <source src="videosRisadaFilm/hero.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="video-card reveal delay-1">
+                    <video controls preload="none" poster="images/portfolio-02.jpg">
+                        <source src="videosRisadaFilm/showcase-02.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="video-card reveal delay-2">
+                    <video controls preload="none" poster="images/portfolio-03.jpg">
+                        <source src="videosRisadaFilm/showcase-03.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="video-card reveal">
+                    <video controls preload="none" poster="images/portfolio-04.jpg">
+                        <source src="videosRisadaFilm/showcase-04.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="video-card reveal delay-2">
+                    <video controls preload="none" poster="images/portfolio-06.jpg">
+                        <source src="videosRisadaFilm/showcase-06.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="video-card reveal">
+                    <video controls preload="none" poster="images/portfolio-07.jpg">
+                        <source src="videosRisadaFilm/showcase-07.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="video-card reveal delay-1">
+                    <video controls preload="none" poster="images/portfolio-08.jpg">
+                        <source src="videosRisadaFilm/showcase-08.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="video-card reveal delay-2">
+                    <video controls preload="none" poster="images/portfolio-09.jpg">
+                        <source src="videosRisadaFilm/showcase-09.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="video-card reveal">
+                    <video controls preload="none" poster="images/fachada-loja.jpg">
+                        <source src="videosRisadaFilm/showcase-10.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="video-card reveal delay-1">
+                    <video controls preload="none" poster="images/fachada-loja.jpg">
+                        <source src="videosRisadaFilm/showcase-11.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="video-card reveal delay-2">
+                    <video controls preload="none" poster="images/portfolio-01.jpg">
+                        <source src="videosRisadaFilm/showcase-12.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="video-card reveal">
+                    <video controls preload="none" poster="images/portfolio-05.jpg">
+                        <source src="videosRisadaFilm/showcase-13.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section style="padding: 80px 0; text-align: center; background: linear-gradient(180deg, #080808 0%, #030303 100%);">
+        <div class="container reveal">
+            <h2 class="section-title">Gostou do que <span class="text-gold">viu?</span></h2>
+            <p class="section-subtitle">Entre em contato e transforme seu veículo ou ambiente com as melhores películas do mercado.</p>
+            <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                <a href="index.html#orcamento" class="btn btn-gold">Peça seu Orçamento</a>
+                <a href="https://wa.me/5511982787205" class="btn btn-outline" target="_blank">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="vertical-align: middle; margin-right: 8px;"><path d="M12.031 0C5.385 0 0 5.385 0 12.031c0 2.128.548 4.195 1.587 6.007L.03 23.959l6.068-1.558a12.029 12.029 0 0 0 5.933 1.564v-.001c6.643 0 12.028-5.384 12.028-12.031S18.673 0 12.031 0zM12.031 21.652c-1.84 0-3.642-.495-5.215-1.428l-.374-.22-3.877.994 1.01-3.774-.242-.387a9.998 9.998 0 0 1-1.53-5.328c0-5.525 4.496-10.02 10.023-10.02 2.677 0 5.196 1.042 7.087 2.934 1.89 1.892 2.933 4.409 2.933 7.086 0 5.524-4.496 10.02-10.02 10.02zm5.498-7.509c-.302-.15-1.785-.88-2.062-.982-.276-.1-.478-.15-.678.15-.202.302-.782.982-.958 1.182-.176.2-.352.226-.654.076-1.164-.582-2.185-1.127-3.023-2.585-.213-.37-.02-.572.13-.72.136-.134.303-.353.454-.53.15-.175.202-.301.302-.501.101-.2.05-.376-.026-.526-.075-.15-.678-1.636-.928-2.242-.243-.588-.49-.508-.678-.517h-.58c-.201 0-.528.075-.805.375-.276.302-1.056 1.032-1.056 2.515s1.08 2.915 1.231 3.115c.15.2 2.122 3.235 5.14 4.537.718.309 1.278.494 1.716.632.721.228 1.378.196 1.894.12.576-.086 1.785-.73 2.037-1.434.25-.705.25-1.306.176-1.434-.075-.125-.276-.2-.578-.35z"/></svg>
+                    WhatsApp
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="foot-grid">
+                <div class="foot-col">
+                    <img src="images/logo.png" alt="Risada Film Logo" style="height: 60px; margin-bottom: 20px;">
+                    <h4><span class="brand-text" style="font-size: 1.5rem;">Risada Film</span></h4>
+                    <p style="color:var(--text-dim);">Autoridade e exclusividade em estética e proteção automotiva na grande São Paulo.</p>
+                </div>
+                <div class="foot-col">
+                    <h5>Menu</h5>
+                    <ul>
+                        <li><a href="index.html#sobre">Sobre Nós</a></li>
+                        <li><a href="index.html#servicos">Serviços</a></li>
+                        <li><a href="index.html#diferenciais">Diferenciais</a></li>
+                        <li><a href="index.html#galeria">Projetos</a></li>
+                        <li><a href="galeria.html">Galeria</a></li>
+                        <li><a href="index.html#blog">Blog</a></li>
+                    </ul>
+                </div>
+                <div class="foot-col">
+                    <h5>Contato & Redes</h5>
+                    <ul>
+                        <li><b style="color:#fff;">WA:</b> <a href="https://wa.me/5511982787205" target="_blank" style="color:var(--accent);">(11) 98278-7205</a><br><span style="padding-left:35px;">(11) 94720-4778</span></li>
+                        <li><b style="color:#fff;">E:</b> risadafilm@gmail.com</li>
+                        <li><b style="color:#fff;">H:</b> Seg-Sáb 08h às 18h</li>
+                    </ul>
+                    <div style="display:flex; gap:15px; margin-top:20px;">
+                        <a href="https://www.instagram.com/risada_film/" target="_blank" class="social-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                        </a>
+                        <a href="https://wa.me/5511982787205" target="_blank" class="social-icon" style="background:rgba(37,211,102,0.1); color:#25D366; border-color:#25D366;">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                        </a>
+                    </div>
+                </div>
+                <div class="foot-col">
+                    <h5>Localização</h5>
+                    <ul>
+                        <li><b style="color:#fff;">R. Paramu, 612</b><br>Vila Bela<br>São Paulo - SP<br>03147-100</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="foot-bot" style="line-height: 1.8;">
+                © <script>document.write(new Date().getFullYear())</script> <span class="brand-text" style="font-size: 0.85rem;">Risada Film</span>. Todos os direitos reservados. Feito para alta conversão.<br>
+                <span style="color: var(--text-dim); font-size: 0.75rem;">Risada Comercio de Pelicula Solar Ltda - CNPJ: 33.574.274/0001-43</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Lightbox Modal -->
+    <div id="lightbox-modal" class="lightbox-modal" onclick="closeLightbox(event)">
+        <button class="lightbox-close" onclick="closeLightbox(event)">&times;</button>
+        <img id="lightbox-img" class="lightbox-img">
+        <p id="lightbox-title" class="lightbox-title"></p>
+    </div>
+
+    <a href="https://wa.me/5511982787205" target="_blank" class="float-wpp">
+        <svg viewBox="0 0 24 24" width="34" height="34" fill="currentColor"><path d="M12.031 0C5.385 0 0 5.385 0 12.031c0 2.128.548 4.195 1.587 6.007L.03 23.959l6.068-1.558a12.029 12.029 0 0 0 5.933 1.564v-.001c6.643 0 12.028-5.384 12.028-12.031S18.673 0 12.031 0zM12.031 21.652c-1.84 0-3.642-.495-5.215-1.428l-.374-.22-3.877.994 1.01-3.774-.242-.387a9.998 9.998 0 0 1-1.53-5.328c0-5.525 4.496-10.02 10.023-10.02 2.677 0 5.196 1.042 7.087 2.934 1.89 1.892 2.933 4.409 2.933 7.086 0 5.524-4.496 10.02-10.02 10.02zm5.498-7.509c-.302-.15-1.785-.88-2.062-.982-.276-.1-.478-.15-.678.15-.202.302-.782.982-.958 1.182-.176.2-.352.226-.654.076-1.164-.582-2.185-1.127-3.023-2.585-.213-.37-.02-.572.13-.72.136-.134.303-.353.454-.53.15-.175.202-.301.302-.501.101-.2.05-.376-.026-.526-.075-.15-.678-1.636-.928-2.242-.243-.588-.49-.508-.678-.517h-.58c-.201 0-.528.075-.805.375-.276.302-1.056 1.032-1.056 2.515s1.08 2.915 1.231 3.115c.15.2 2.122 3.235 5.14 4.537.718.309 1.278.494 1.716.632.721.228 1.378.196 1.894.12.576-.086 1.785-.73 2.037-1.434.25-.705.25-1.306.176-1.434-.075-.125-.276-.2-.578-.35z"/></svg>
+    </a>
+
+    <script>
+        // Lightbox with keyboard navigation
+        function openLightbox(src, title) {
+            const modal = document.getElementById('lightbox-modal');
+            document.getElementById('lightbox-img').src = src;
+            document.getElementById('lightbox-title').innerText = title;
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeLightbox(e) {
+            if (e && e.target.tagName === 'IMG') return;
+            const modal = document.getElementById('lightbox-modal');
+            modal.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeLightbox(e);
+        });
+
+        // Gallery Filter System
+        function filterGallery(category) {
+            const items = document.querySelectorAll('.gal-item');
+            const btns = document.querySelectorAll('.filter-btn');
+
+            btns.forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[data-filter="${category}"]`).classList.add('active');
+
+            items.forEach((item, i) => {
+                const cat = item.getAttribute('data-category');
+                if (category === 'todos' || cat === category) {
+                    item.setAttribute('data-hidden', 'false');
+                    item.style.display = '';
+                    item.style.animation = `fadeUp 0.5s ease ${i * 0.05}s forwards`;
+                } else {
+                    item.setAttribute('data-hidden', 'true');
+                }
+            });
+        }
+
+        // Header scroll effect
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('header');
+            if (window.scrollY > 50) header.classList.add('scrolled');
+            else header.classList.remove('scrolled');
+        });
+
+        // Mobile Menu
+        const mbtn = document.getElementById('mbtn');
+        const navLinks = document.getElementById('nav-links');
+        mbtn.addEventListener('click', () => { navLinks.classList.toggle('active'); });
+
+        // Scroll Reveal
+        const reveals = document.querySelectorAll('.reveal');
+        const revealOnScroll = () => {
+            const wHeight = window.innerHeight;
+            reveals.forEach(el => {
+                const elTop = el.getBoundingClientRect().top;
+                if (elTop < wHeight - 80) el.classList.add('active');
+            });
+        };
+        window.addEventListener('scroll', revealOnScroll);
+        revealOnScroll();
+    </script>
+</body>
+</html>
