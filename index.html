@@ -80,8 +80,6 @@
 
         /* Hero */
         .hero { min-height: 100vh; display: flex; align-items: center; position: relative; overflow: hidden; background: #030303; padding-top: 100px; padding-bottom: 40px; }
-        .hero-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center center; z-index: 0; opacity: 0.45; }
-        .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to right, rgba(5,5,5,1) 0%, rgba(5,5,5,0.7) 40%, rgba(5,5,5,0.2) 100%); z-index: 1; }
         .hero .container { position: relative; z-index: 2; }
         .hero::after { content: ''; position: absolute; right: 0; top: 0; width: 50%; height: 100%; background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600"><path fill="%231a1a1a" d="M800 0v600H200L800 0z"/></svg>') no-repeat right; background-size: cover; z-index: 0; opacity: 0.1; }
         .hero-cont { max-width: 700px; }
@@ -218,6 +216,10 @@
             0% { box-shadow: 0 0 0 0 rgba(212,175,55,0.2); }
             70% { box-shadow: 0 0 0 10px rgba(212,175,55,0); }
             100% { box-shadow: 0 0 0 0 rgba(212,175,55,0); }
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .social-icon { display: flex; align-items: center; justify-content: center; width: 45px; height: 45px; background: rgba(255,255,255,0.05); border-radius: 50%; color: #fff; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); text-decoration: none; border: 1px solid rgba(255,255,255,0.1); }
@@ -499,26 +501,31 @@
         </div>
     </header>
 
-    <section class="hero">
-        <img src="images/hero-audi.jpg" alt="Audi com Película Premium — Risada Film" class="hero-bg">
-        <div class="hero-overlay"></div>
-        <div class="container hero-cont">
-            <h1>Proteção.<br>Estilo.<br><span class="text-gold">Performance.</span></h1>
-            <p><strong><span style="color: #FF0000;">Aplicador Autorizado 3M</span>.</strong> Especialistas em películas de alta tecnologia automotiva, residencial e comercial, <strong>PPF</strong> (Paint Protection Film), e <strong>Acessórios</strong>. Transforme seu veículo com o exclusivo sistema <strong>TECH-CUT</strong> de corte computadorizado.</p>
-            <div class="hero-btns" style="margin-bottom: 35px;">
-                <a href="#orcamento" class="btn btn-gold">Peça seu Orçamento</a>
-                <a href="https://wa.me/5511982787205" class="btn btn-outline" target="_blank">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12.031 0C5.385 0 0 5.385 0 12.031c0 2.128.548 4.195 1.587 6.007L.03 23.959l6.068-1.558a12.029 12.029 0 0 0 5.933 1.564v-.001c6.643 0 12.028-5.384 12.028-12.031S18.673 0 12.031 0zM12.031 21.652c-1.84 0-3.642-.495-5.215-1.428l-.374-.22-3.877.994 1.01-3.774-.242-.387a9.998 9.998 0 0 1-1.53-5.328c0-5.525 4.496-10.02 10.023-10.02 2.677 0 5.196 1.042 7.087 2.934 1.89 1.892 2.933 4.409 2.933 7.086 0 5.524-4.496 10.02-10.02 10.02zm5.498-7.509c-.302-.15-1.785-.88-2.062-.982-.276-.1-.478-.15-.678.15-.202.302-.782.982-.958 1.182-.176.2-.352.226-.654.076-1.164-.582-2.185-1.127-3.023-2.585-.213-.37-.02-.572.13-.72.136-.134.303-.353.454-.53.15-.175.202-.301.302-.501.101-.2.05-.376-.026-.526-.075-.15-.678-1.636-.928-2.242-.243-.588-.49-.508-.678-.517h-.58c-.201 0-.528.075-.805.375-.276.302-1.056 1.032-1.056 2.515s1.08 2.915 1.231 3.115c.15.2 2.122 3.235 5.14 4.537.718.309 1.278.494 1.716.632.721.228 1.378.196 1.894.12.576-.086 1.785-.73 2.037-1.434.25-.705.25-1.306.176-1.434-.075-.125-.276-.2-.578-.35z"/></svg> 
-                    WhatsApp
-                </a>
-            </div>
-            <div style="opacity:0; animation: fadeUp 1s ease forwards 0.8s; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 25px; max-width: 480px;">
-                <p style="font-size:0.8rem; text-transform:uppercase; letter-spacing:2px; margin-bottom:15px; color:#aaa; font-weight:600;">Tecnologia & Parceiros Oficiais</p>
-                <div style="display:flex; gap:30px; align-items:center;">
-                    <b style="font-family:var(--font-h); font-size:1.6rem; color:#fff;">3M</b>
-                    <b style="font-family:var(--font-h); font-size:1.4rem; color:#fff;">NexFilm</b>
-                    <b style="font-family:var(--font-h); font-size:1.4rem; color:#fff;">xlcontrol</b>
+    <section class="hero" id="sobre">
+        <div class="container" style="display:flex; flex-wrap:wrap; gap:50px; align-items:center; width: 100%; position: relative; z-index: 2;">
+            <div class="hero-cont" style="flex:1; min-width:300px; max-width: 600px;">
+                <h1 style="font-size: clamp(2rem, 4vw, 3rem); line-height: 1.2; font-family: var(--font-b); text-transform: uppercase;">Nosso compromisso é a<br>sua <span class="text-gold">satisfação.</span></h1>
+                <p>Na <span class="brand-text" style="font-size:inherit;">Risada Film</span>, somos apaixonados por transformar automóveis e arquiteturas. Com mais de uma década de experiência, nos tornamos referência na aplicação de películas de alta performance para veículos, residências e comércios na grande São Paulo.</p>
+                <p style="margin-bottom: 30px; font-size: 1.1rem; opacity: 0; animation: fadeUp 1s ease forwards 0.3s; color: var(--text-dim);">Trabalhamos com as melhores marcas do mercado garantindo produtos de ponta. Equipe altamente qualificada e utilização do exclusivo sistema de corte computadorizado <strong>TECH-CUT</strong>. <strong><span style="color: #FF0000;">Aplicador Autorizado 3M</span>.</strong></p>
+                <div class="hero-btns" style="margin-bottom: 40px;">
+                    <a href="#orcamento" class="btn btn-gold">Fale Conosco</a>
+                    <a href="https://wa.me/5511982787205" class="btn btn-outline" target="_blank" style="display:flex; align-items:center; justify-content:center; gap:8px;">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12.031 0C5.385 0 0 5.385 0 12.031c0 2.128.548 4.195 1.587 6.007L.03 23.959l6.068-1.558a12.029 12.029 0 0 0 5.933 1.564v-.001c6.643 0 12.028-5.384 12.028-12.031S18.673 0 12.031 0zM12.031 21.652c-1.84 0-3.642-.495-5.215-1.428l-.374-.22-3.877.994 1.01-3.774-.242-.387a9.998 9.998 0 0 1-1.53-5.328c0-5.525 4.496-10.02 10.023-10.02 2.677 0 5.196 1.042 7.087 2.934 1.89 1.892 2.933 4.409 2.933 7.086 0 5.524-4.496 10.02-10.02 10.02zm5.498-7.509c-.302-.15-1.785-.88-2.062-.982-.276-.1-.478-.15-.678.15-.202.302-.782.982-.958 1.182-.176.2-.352.226-.654.076-1.164-.582-2.185-1.127-3.023-2.585-.213-.37-.02-.572.13-.72.136-.134.303-.353.454-.53.15-.175.202-.301.302-.501.101-.2.05-.376-.026-.526-.075-.15-.678-1.636-.928-2.242-.243-.588-.49-.508-.678-.517h-.58c-.201 0-.528.075-.805.375-.276.302-1.056 1.032-1.056 2.515s1.08 2.915 1.231 3.115c.15.2 2.122 3.235 5.14 4.537.718.309 1.278.494 1.716.632.721.228 1.378.196 1.894.12.576-.086 1.785-.73 2.037-1.434.25-.705.25-1.306.176-1.434-.075-.125-.276-.2-.578-.35z"/></svg> 
+                        WhatsApp
+                    </a>
                 </div>
+                <div style="opacity:0; animation: fadeUp 1s ease forwards 0.8s; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 25px;">
+                    <p style="font-size:0.8rem; text-transform:uppercase; letter-spacing:2px; margin-bottom:15px; color:#aaa; font-weight:600;">Tecnologia & Parceiros Oficiais</p>
+                    <div style="display:flex; gap:30px; align-items:center;">
+                        <b style="font-family:var(--font-h); font-size:1.6rem; color:#fff;">3M</b>
+                        <b style="font-family:var(--font-h); font-size:1.4rem; color:#fff;">NexFilm</b>
+                        <b style="font-family:var(--font-h); font-size:1.4rem; color:#fff;">xlcontrol</b>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="flex:1; min-width:300px; opacity:0; animation: fadeUp 1s ease forwards 0.6s; display:flex; justify-content:center;">
+                <img src="images/fachada-loja.jpg" alt="Fachada da loja Risada Film" style="width:100%; max-width: 550px; border-radius:16px; box-shadow:0 30px 60px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.05); transform: perspective(1000px) rotateY(-8deg); transition: transform 0.5s ease;" onmouseover="this.style.transform='perspective(1000px) rotateY(0deg) scale(1.02)'" onmouseout="this.style.transform='perspective(1000px) rotateY(-8deg)'">
             </div>
         </div>
     </section>
@@ -548,23 +555,7 @@
         </div>
     </section>
 
-    <section id="sobre" style="background: var(--elevated);">
-        <div class="container">
-            <h2 class="section-title reveal">Sobre a <span class="brand-text">Risada Film</span></h2>
-            <p class="section-subtitle reveal">Mais de 10 anos de experiência em películas automotivas e arquitetônicas.</p>
-            <div style="display:flex; flex-wrap:wrap; gap:40px; align-items:center;">
-                <div style="flex:1; min-width:300px;">
-                    <img src="images/fachada-loja.jpg" alt="Fachada da Risada Film - Rua Paramu 612, Vila Bela" style="width:100%; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
-                </div>
-                <div style="flex:1; min-width:300px;">
-                    <h3 style="font-size:1.8rem; margin-bottom:20px; font-family:var(--font-b); font-weight:800; text-transform:uppercase;">Nosso compromisso é a sua <span class="text-gold">satisfação</span>.</h3>
-                    <p style="color:var(--text-dim); margin-bottom:15px; font-size:1.05rem;">Na <span class="brand-text" style="font-size:inherit;">Risada Film</span>, somos apaixonados por transformar automóveis e arquiteturas. Com mais de uma década de experiência, nos tornamos referência na aplicação de películas de alta performance para veículos, residências e comércios na grande São Paulo.</p>
-                    <p style="color:var(--text-dim); margin-bottom:20px;">Trabalhamos com as melhores marcas do mercado, como <strong>3M</strong>, <strong>STEK</strong> e <strong>ApexFilm</strong>, garantindo produtos de ponta e durabilidade incomparável. Nossa equipe é altamente qualificada e utiliza o exclusivo sistema de corte computadorizado <strong>TECH-CUT</strong>, assegurando precisão e acabamento impecável em cada projeto.</p>
-                    <a href="#orcamento" class="btn btn-gold">Fale Conosco</a>
-                </div>
-            </div>
-        </div>
-    </section>
+
 
     <!-- Veja na Prática - Vídeo Showcase -->
     <section id="veja-na-pratica" style="padding: 80px 0; background: #000;">
@@ -1078,7 +1069,7 @@
                 card.innerHTML = `
                     <h4>${f.name}</h4>
                     <p class="desc">${f.desc}</p>
-                    <div class="logo-placeholder">RISADA FILM</div>
+                    <div class="logo-placeholder" style="margin-bottom: 20px;"><img src="images/logo.png" alt="Risada Film" style="height: 48px; display: block; margin: 0 auto; filter: drop-shadow(0 0 10px rgba(212,175,55,0.3));"></div>
                     <div class="specs">
                         <span><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>Proteção UV<br>${f.uv}</span>
                         <span><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>Proteção térmica<br>${f.term}</span>
